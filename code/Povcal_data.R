@@ -11,8 +11,8 @@ params = list(
   "Countries"="all",
   "GroupedBy"="WB",
   "PovertyLine"="1.90",
-  "YearSelected"=paste0(c(1981:2013),collapse=","),
-  "format"="js"
+  "YearSelected"=paste0(c(1981:2015),collapse=","),
+  "format"="csv"
 )
 agg_results = list()
 smy_results = list()
@@ -30,8 +30,8 @@ for(i in 1:length(c_items)){
 
 #
 list_index=1
-povline=1.90
-# for(povline in c(seq(from=0,to=10,by=0.01),seq(from=10,to=25.5,by=0.25),seq(from=25.5,to=35.5,by=0.025),seq(from=35,to=500,by=1),seq(from=500,to=800,by=5))){
+# povline=1.90
+ for(povline in c(seq(from=0,to=10,by=0.01),seq(from=10,to=25.5,by=0.25),seq(from=25.5,to=35.5,by=0.025),seq(from=35,to=500,by=1),seq(from=500,to=800,by=5))){
   message(povline)
   params["PovertyLine"]=povline
   response=POST(url,body=params)
@@ -53,14 +53,14 @@ povline=1.90
   agg_results[[list_index]] = agg
   smy_results[[list_index]] = smy
   list_index=list_index+1
-# }
+}
 
 agg_total=rbindlist(agg_results)
 smy_total=rbindlist(smy_results)
 wd="C:/Users/Zach/Documents/Poverty data"
 setwd(wd)
-save(smy_total,file="SMYPovcalScrape1May2018.RData")
-save(agg_total,file="AGGPovcalScrape1May2018.RData")
+save(smy_total,file="SMYPovcalScrapeSept2018.RData")
+save(agg_total,file="AGGPovcalScrapeSept2018.RData")
 load("C:/Users/Zach/Documents/Poverty data/SMYPovcalScrape1May2018.RData")
 load("C:/Users/Zach/Documents/Poverty data/AGGPovcalScrape1May2018.RData")
 wd="C:/Users/Zach/Documents/Poverty data"
@@ -158,5 +158,5 @@ P20main$Nrestaverage = (((P20main$Mean/(365/12))*P20main$pop)-(P20main$NP20avera
 P20main=join(P20main, GlobalExtPov, by="RequestYear")
 
 
-write.csv(P20main,"P20incometrends20180521.csv",row.names=FALSE,na="")
+write.csv(P20main,"P20incometrends.csv",row.names=FALSE,na="")
 

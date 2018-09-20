@@ -53,7 +53,7 @@ for(i in 1:length(c_items)){
 
 #
 list_index=1
-for(povline in c(1.9,3.2,5.5)){
+for(povline in c(seq(from=0,to=10,by=0.01),seq(from=10,to=25.5,by=0.25),seq(from=25.5,to=35.5,by=0.025),seq(from=35,to=500,by=1),seq(from=500,to=800,by=5))){
 message(povline)
 params["PovertyLine"]=povline
 response=POST(url,body=params)
@@ -137,4 +137,19 @@ regions=join(agg_total,old_regional, by=c("RequestYear","RegionCID","PovertyLine
 
 
 #Country Check
+setdiff(unique(old_smy$CountryName),unique(smy_total$CountryName))
+setdiff(unique(smy_total$CountryName),unique(old_smy$CountryName))
 
+smy_2015=smy_total[which(smy_total$RequestYear==2015),]
+smy_2013=smy_total[which(smy_total$RequestYear==2013),]
+setnames(smy_2013,"H","H2013")
+comparisonsmy=join(smy_2015,smy_2013,by=c("CountryName","PovertyLine"))
+comparisonsmy$H2013=as.numeric(unfactor(comparisonsmy$H2013))
+comparisonsmy$H=as.numeric(unfactor(comparisonsmy$H))
+comparisonsmy$diff=comparisonsmy$H2013-comparisonsmy$H
+comparisonsmy$diffpct=comparisonsmy$diff/comparisonsmy$H2013
+pov_inc=subset(comparisonsmy, comparisonsmy$diff<=0)
+length(unique(smy_2015$CountryName))
+length(unique(pov_inc$CountryName))
+pov_dec=subset(comparisonsmy, comparisonsmy$diff>0)
+length(unique(pov_dec$CountryName))
