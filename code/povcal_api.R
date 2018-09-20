@@ -1,16 +1,11 @@
-list.of.packages <- c("stringr","httr","jsonlite","varhandle","plyr","data.table")
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
-lapply(list.of.packages, require, character.only=T)
-
-
-povcal_smy = function(pl=1.9){
+povcal_smy = function(pl=1.9,group.by="WB"){
   url = "http://iresearch.worldbank.org/PovcalNet/PovcalNetAPI.ashx?"
   params = list(
     "Countries"="all",
     "PovertyLine"=as.character(pl),
-    "SurveyYears"="all",
+    "RefYears"="all",
     "Display"="C",
+    "GroupedBy"=group.by,
     "format"="csv"
   )
   
