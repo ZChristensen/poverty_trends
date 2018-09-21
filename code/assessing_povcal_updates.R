@@ -18,6 +18,8 @@ load("data/AGGPovcalScrape1May2018.RData")
 load("data/SMYPovcalScrape1May2018_low.RData")
 load("data/SMYPovcalScrape1May2018_high.RData")
 
+agg_total=unique(agg_total)
+
 # agg_total=unfactor(data.frame(agg_total))
 # save(agg_total,file="data/AGGPovcalScrape1May2018.RData")
 # smy_high=unfactor(data.frame(smy_high))
@@ -53,6 +55,9 @@ load("data/AGGPovcalScrapeSept2018.RData")
 load("data/SMYPovcalScrapeSept2018_low.RData")
 load("data/SMYPovcalScrapeSept2018_high.RData")
 
+# agg_total=unique(agg_total)
+# save(agg_total,file="data/AGGPovcalScrapeSept2018.RData")
+
 smy_total=rbind(smy_total_high,smy_total_low)
 smy_total=smy_total[which(smy_total$CoverageType %in% c("N","A")),]
 setdiff(smy_total$CountryName,old_smy$CountryName)
@@ -78,9 +83,14 @@ setdiff(agg_total$requestYear,old_regional$requestYear)
 
 
 regions=join(agg_total,old_regional, by=c("requestYear","regionCID","povertyLine"))
-ggplot(agg_total[which(agg_total$povertyLine==1.9),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
-ggplot(agg_total[which(agg_total$povertyLine==1.9 & requestYear>=1999),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
-ggplot(agg_total[which(agg_total$povertyLine==1.9 & requestYear>=2010),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+agg190=agg_total[which(agg_total$povertyLine==1.9),]
+agg190=agg190[order(agg190$regionCID),]
+agg190=agg190[order(agg190$requestYear),]
+agg190[,c("hc_growth","yrchange"):=list(c(NA,diff(.SD$hc)),c(NA,diff(.SD$requestYear))),by=.(regionCID)]
+agg190$annualized_hc_growth=agg190$hc_growth/agg190$yrchange
+ggplot(agg190, aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+ggplot(agg190[which(requestYear>=1999),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+ggplot(agg190[which(requestYear>=2010),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
 
 
 
