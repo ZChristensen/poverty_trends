@@ -38,6 +38,7 @@ old_regional$ConsumptionFloor = old_regional$PovertyLine*(1-(old_regional$P2/old
 
 smy_total=rbind(smy_high,smy_low)
 
+
 smy_total=unfactor(data.frame(smy_total))
 smy_total= subset(smy_total, displayMode==0|displayMode==2|displayMode==4|displayMode==5)
       smy.extpov=subset(smy_total,PovertyLine==1.90)
@@ -77,6 +78,10 @@ setdiff(agg_total$requestYear,old_regional$requestYear)
 
 
 regions=join(agg_total,old_regional, by=c("requestYear","regionCID","povertyLine"))
+ggplot(agg_total[which(agg_total$povertyLine==1.9),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+ggplot(agg_total[which(agg_total$povertyLine==1.9 & requestYear>=1999),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+ggplot(agg_total[which(agg_total$povertyLine==1.9 & requestYear>=2010),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+
 
 
 #Regional Check
@@ -94,6 +99,9 @@ ggplot(eap.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line
 # ohi=ohi[,c("requestYear","hc","oldhc")]
 # ohi.m=melt(ohi,id.vars="requestYear")
 # ggplot(ohi.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line()
+
+ggplot(agg_total)
+
 #Country Check
 smy_2015=smy_total[which(smy_total$RequestYear==2015),]
 smy_2013=smy_total[which(smy_total$RequestYear==2013),]
