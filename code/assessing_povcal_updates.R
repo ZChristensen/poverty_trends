@@ -1,5 +1,5 @@
 #Assessing updates to PovcalNet
-list.of.packages <- c("plyr","data.table","varhandle","ggplot2")
+list.of.packages <- c("plyr","data.table","varhandle","ggplot2","reshape2")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, require, character.only=T)
@@ -53,9 +53,11 @@ load("data/SMYPovcalScrapeSept2018_low.RData")
 load("data/SMYPovcalScrapeSept2018_high.RData")
 
 smy_total=rbind(smy_total_high,smy_total_low)
+smy_total=smy_total[which(smy_total$CoverageType %in% c("N","A")),]
 setdiff(smy_total$CountryName,old_smy$CountryName)
 setdiff(old_smy$CountryName,smy_total$CountryName)
 old_smy$CountryName[which(old_smy$CountryName=="Swaziland")]="Eswatini"
+
 
 #Global Check
 colnames(old_regional) =c("requestYear",
@@ -78,23 +80,37 @@ regions=join(agg_total,old_regional, by=c("requestYear","regionCID","povertyLine
 
 
 #Regional Check
-
+regions$oldhc=regions$oldhc/100
 regions$hcdiff=regions$oldhc-regions$hc
+regions$hcdiff_pct=regions$hcdiff/regions$oldhc
+big_diff_reg=subset(regions, abs(hcdiff_pct)>.02)
+##Big revisions seen for 2005 EAP, decreased HC by 6.9 percentage points, dropping global estimate by 2%
+eap=regions[which(regions$regionCID=="EAP"& regions$povertyLine==1.9),]
+eap=eap[,c("requestYear","hc","oldhc")]
+eap.m=melt(eap,id.vars="requestYear")
+ggplot(eap.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line()+theme_classic()
 
+# ohi=regions[which(regions$regionCID=="OHI"& regions$povertyLine==1.9),]
+# ohi=ohi[,c("requestYear","hc","oldhc")]
+# ohi.m=melt(ohi,id.vars="requestYear")
+# ggplot(ohi.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line()
 #Country Check
-setdiff(unique(old_smy$CountryName),unique(smy_total$CountryName))
-setdiff(unique(smy_total$CountryName),unique(old_smy$CountryName))
-
 smy_2015=smy_total[which(smy_total$RequestYear==2015),]
 smy_2013=smy_total[which(smy_total$RequestYear==2013),]
-setnames(smy_2013,"H","H2013")
+setnames(smy_2013,"HeadCount","HeadCount2013")
+
 comparisonsmy=join(smy_2015,smy_2013,by=c("CountryName","PovertyLine"))
-comparisonsmy$H2013=as.numeric(unfactor(comparisonsmy$H2013))
-comparisonsmy$H=as.numeric(unfactor(comparisonsmy$H))
-comparisonsmy$diff=comparisonsmy$H2013-comparisonsmy$H
-comparisonsmy$diffpct=comparisonsmy$diff/comparisonsmy$H2013
-pov_inc=subset(comparisonsmy, comparisonsmy$diff<=0)
+comparisonsmy$hcdiff=comparisonsmy$HeadCount-comparisonsmy$HeadCount2013
+comparisonsmy$hc_growth=comparisonsmy$hcdiff/comparisonsmy$HeadCount2013
+comparisonsmy190=comparisonsmy[which(comparisonsmy$PovertyLine==1.9),]
+pov_inc=subset(comparisonsmy190, comparisonsmy190$hcdiff>0)
 length(unique(smy_2015$CountryName))
 length(unique(pov_inc$CountryName))
-pov_dec=subset(comparisonsmy, comparisonsmy$diff>0)
-length(unique(pov_dec$CountryName))
+unique(comparisonsmy190$CountryName[which(comparisonsmy190$hcdiff>.01)])
+unique(comparisonsmy190$CountryName[which(comparisonsmy190$hcdiff>0)])
+toppoverty=comparisonsmy190$CountryName[which(rank(comparisonsmy190$hcdiff)<20)]
+toppov=smy_total[which(smy_total$CountryName %in% toppoverty & smy_total$PovertyLine==1.9 & smy_total$RequestYear>2005)]
+toppov=toppov[,c("RequestYear","HeadCount","CountryName")]
+
+ggplot(toppov,aes(x=RequestYear,y=HeadCount,group=CountryName,color=CountryName))+geom_line()+theme_classic()
+
