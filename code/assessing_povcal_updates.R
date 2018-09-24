@@ -1,5 +1,5 @@
 #Assessing updates to PovcalNet
-list.of.packages <- c("plyr","data.table","varhandle","ggplot2","reshape2")
+list.of.packages <- c("plyr","data.table","varhandle","ggplot2","reshape2","readr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, require, character.only=T)
@@ -91,6 +91,9 @@ agg190$annualized_hc_growth=agg190$hc_growth/agg190$yrchange
 ggplot(agg190, aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
 ggplot(agg190[which(requestYear>=1999),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
 ggplot(agg190[which(requestYear>=2010),], aes(x=requestYear,y=hc,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+ggplot(agg190[which(regionCID=="WLD"),], aes(x=requestYear,y=annualized_hc_growth,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+ggplot(agg190[which(requestYear>=1999),], aes(x=requestYear,y=annualized_hc_growth,group=regionCID,color=regionCID))+geom_line()+theme_classic()
+ggplot(agg190[which(requestYear>=2010),], aes(x=requestYear,y=annualized_hc_growth,group=regionCID,color=regionCID))+geom_line()+theme_classic()
 
 
 
@@ -110,7 +113,7 @@ ggplot(eap.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line
 # ohi.m=melt(ohi,id.vars="requestYear")
 # ggplot(ohi.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line()
 
-ggplot(agg_total)
+
 
 #Country Check
 smy_2015=smy_total[which(smy_total$RequestYear==2015),]
@@ -132,3 +135,56 @@ toppov=toppov[,c("RequestYear","HeadCount","CountryName")]
 
 ggplot(toppov,aes(x=RequestYear,y=HeadCount,group=CountryName,color=CountryName))+geom_line()+theme_classic()
 
+P20incometrends <- read_csv("data/P20incometrends.csv")
+
+agg_total$ConsumptionFloor = agg_total$povertyLine*(1-(agg_total$p2/agg_total$pg))
+agg_total$diff=abs(agg_total$hc-0.2)
+regional.extpov = subset(agg_total, povertyLine==1.90)
+GlobalExtPov = subset(regional.extpov, regionTitle=="World Total")
+names(GlobalExtPov)[which(names(GlobalExtPov)=="ConsumptionFloor")] <- "Global.Consumption.Floor"
+names(GlobalExtPov)[which(names(GlobalExtPov)=="hc")] <- "Global.Ext.HC"
+keep=c("requestYear","Global.Consumption.Floor","Global.Ext.HC")
+GlobalExtPov=GlobalExtPov[,keep,with=F]
+regional.p20 = data.table(agg_total)[,.SD[which.min(diff)],by=.(regionTitle,requestYear)]
+WorldP20threshold = subset(regional.p20, regionTitle=="World Total")
+WorldP20threshold$P20Threshold = WorldP20threshold$povertyLine
+WorldP20threshold$P20pop=WorldP20threshold$population*.2
+WorldP20threshold$P20average=WorldP20threshold$povertyLine -((WorldP20threshold$povertyLine*(WorldP20threshold$pg)*WorldP20threshold$population)/(WorldP20threshold$population*.2))
+WorldP20threshold$restpop = WorldP20threshold$pop - WorldP20threshold$P20pop
+WorldP20threshold$Restaverage=((WorldP20threshold$mean/(365/12)*WorldP20threshold$pop)-(WorldP20threshold$P20average*WorldP20threshold$P20pop))/WorldP20threshold$restpop
+
+
+World=WorldP20threshold[,c("requestYear","P20average","ConsumptionFloor","Restaverage")]
+World=join(World,GlobalExtPov,by=c("requestYear"))
+World=World[order(World$requestYear),]
+World[,c("P20_growth","rest_growth","yrchange"):=list(c(NA,diff(.SD$P20average)),c(NA,diff(.SD$Restaverage)),c(NA,diff(.SD$requestYear)))]
+World$P20_rate=(World$P20_growth/World$yrchange)/World$P20average
+World$Rest_rate=(World$rest_growth/World$yrchange)/World$Restaverage
+
+ggplot(World, aes(x=requestYear))+
+  geom_line(aes(x=requestYear,y=Rest_rate,color="Rest_rate"))+
+  geom_line(aes(x=requestYear,y=P20_rate,color="P20_rate"))+
+  labs(x="Year",y="Growth rate of average income")+
+  theme_classic()
+ggplot(WorldP20threshold[which(WorldP20threshold$requestYear==2013|WorldP20threshold$requestYear==2015),], aes(x=requestYear))+
+  geom_line(aes(x=requestYear,y=Restaverage))+
+  geom_line(aes(x=requestYear,y=P20average))+
+  labs(x="Year",y="Average daily income per capita\n$2011 PPP",title="The gap between the P20 and the rest of the population is growing")+
+  theme_classic()
+
+
+ggplot(World[which(World$requestYear>=1999),], aes(x=requestYear))+
+  geom_line(aes(x=requestYear,y=Global.Consumption.Floor))+
+  labs(x="Year",y="Consumption per capita\n$2011 PPP",title="The global consumption floor is declining")+
+  theme_classic()
+
+##Looking at modal consumption level
+
+agg_total=agg_total[order(agg_total$regionCID,agg_total$requestYear,agg_total$povertyLine),]
+agg_total[,c("Hdiff"):=list(c(NA,diff(.SD$hc))),by=c("regionCID","requestYear")]
+cfloor=data.table(agg_total[which(agg_total$povertyLine<10)])[,.SD[which.max(Hdiff)],by=c("regionCID","requestYear")]
+
+ggplot(cfloor, aes(x=requestYear,group=regionCID,color=regionCID))+
+  geom_line(aes(x=requestYear,y=povertyLine))+
+  labs(x="Year",y="Daily consumption per capita\n$2011 PPP",title="Consumption Floor\nlargest population at a given poverty line")+
+  theme_classic()
