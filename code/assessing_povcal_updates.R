@@ -135,8 +135,102 @@ toppov=toppov[,c("RequestYear","HeadCount","CountryName")]
 
 ggplot(toppov,aes(x=RequestYear,y=HeadCount,group=CountryName,color=CountryName))+geom_line()+theme_classic()
 
-P20incometrends <- read_csv("data/P20incometrends.csv")
+CLB=c("Benin",
+      "Burundi"
+      ,"Central African Republic"
+      ,"Chad"
+      ,"Congo, Republic of"
+      ,"Congo, Democratic Republic of"
+      ,"Gambia, The"
+      ,"Guinea"
+      ,"Guinea-Bissau"
+      ,"Haiti"
+      ,"Lesotho"
+      ,"Liberia"
+      ,"Madagascar"
+      ,"Malawi"
+      ,"Micronesia, Federated States of"
+      ,"Mozambique"
+      ,"Niger"
+      ,"Nigeria"
+      ,"Papua New Guinea"
+      ,"South Sudan"
+      ,"Syrian Arab Republic"
+      ,"Togo"
+      ,"Uganda"
+      ,"Yemen, Republic of"
+      ,"Zambia")
+povclb=smy_total[which(smy_total$CountryName %in% CLB & smy_total$PovertyLine==1.9),]
+ggplot(povclb[which(povclb$RequestYear>2012)], aes(x=RequestYear))+
+  geom_line(aes(x=RequestYear,y=HeadCount,group=CountryName,color=CountryName))
+smy_total$CLB=NA
+smy_total$CLB[which(smy_total$CountryName %in% CLB)]=1
+clb.tab=data.table(smy_total[which(smy_total$PovertyLine==1.9)])[,.(
+  HC=mean(HeadCount)
+),by=c("RequestYear","CLB")]
 
+#Elephant graph
+
+masterlist=list()
+masterlist.index=1
+for (i in
+     c(seq(.01,.99,by=.01),
+       seq(.991,1,by=.001)
+     )){
+  print(i)
+  new=data.table(agg_total[which(agg_total$regionCID=="WLD")])[,.SD[which.min(abs(hc-i))],by=c("requestYear")]
+  masterlist[[masterlist.index]]=new
+  masterlist.index=masterlist.index+1
+}
+master=rbindlist(masterlist)
+master=master[,c("hc","povertyLine","requestYear","regionCID")]
+
+master=master[order(master$requestYear, master$hc),]
+master$HC=c(seq(1,99,by=1),
+            seq(99.1,100,by=.1))
+
+years=c(unique(master$requestYear))
+years=years[order(years)]
+headcounts=unique(master$hc)
+countries=unique(master$regionCID)
+
+master=data.frame(master)
+
+if(exists("masterwide")){
+  rm(masterwide)
+}
+for(year in years){ 
+    year.values=c()
+    year.hcs=c()
+    year.nam=paste0("Income",year)
+    year.values=subset(master, requestYear==year)[c("HC","povertyLine")]
+    setnames(year.values,"povertyLine",year.nam)
+    if(exists("masterwide")){
+      masterwide=merge(masterwide,year.values,by="HC",all=T)
+    }
+    else{
+      masterwide=year.values
+    }
+  }
+
+
+masterwide$growth87to08rt = ((masterwide$Income2008-masterwide$Income1987)/masterwide$Income1987)/(2008-1987)
+masterwide$growth03to15rt = ((masterwide$Income2015-masterwide$Income2002)/masterwide$Income2002)/(2015-2002)
+masterwide$growth93to15rt = ((masterwide$Income2015-masterwide$Income1993)/masterwide$Income1993)/(2015-1993)
+masterwide$growth08to15rt = ((masterwide$Income2015-masterwide$Income2008)/masterwide$Income2008)/(2015-2008)
+masterwide$growth13to15rt = ((masterwide$Income2015-masterwide$Income2013)/masterwide$Income2013)/(2015-2013)
+ggplot(masterwide[which(masterwide$HC!=100),],aes(x=HC))+
+  geom_line(aes(x=HC,y=growth13to15rt))+
+  # geom_line(aes(x=HC,y=growth03to15rt))+
+  # geom_line(aes(x=HC,y=growth93to15rt))+
+  # geom_line(aes(x=HC,y=growth08to15rt))+
+  labs(x="Global Income Percentile",y="Income growth rate\n2013-2015")+
+  scale_y_continuous(labels= scales::percent)+
+  theme_classic()
+  
+
+
+#Consumption floor calculations
 agg_total$ConsumptionFloor = agg_total$povertyLine*(1-(agg_total$p2/agg_total$pg))
 agg_total$diff=abs(agg_total$hc-0.2)
 regional.extpov = subset(agg_total, povertyLine==1.90)
@@ -178,7 +272,7 @@ ggplot(World[which(World$requestYear>=1999),], aes(x=requestYear))+
   labs(x="Year",y="Consumption per capita\n$2011 PPP",title="The global consumption floor is declining")+
   theme_classic()
 
-##Looking at modal consumption level
+##Looking at modal consumption levels
 
 agg_total=agg_total[order(agg_total$regionCID,agg_total$requestYear,agg_total$povertyLine),]
 agg_total[,c("Hdiff"):=list(c(NA,diff(.SD$hc))),by=c("regionCID","requestYear")]
@@ -188,3 +282,5 @@ ggplot(cfloor, aes(x=requestYear,group=regionCID,color=regionCID))+
   geom_line(aes(x=requestYear,y=povertyLine))+
   labs(x="Year",y="Daily consumption per capita\n$2011 PPP",title="Consumption Floor\nlargest population at a given poverty line")+
   theme_classic()
+
+
