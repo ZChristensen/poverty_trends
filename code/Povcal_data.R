@@ -109,6 +109,7 @@ gc()
 
 #Calculate averages of P20 and rest
 P20main= data.frame(P20main)
+P20main=P20main[which(P20main$CoverageType %in% c("A","N")),]
 P20main$pop = P20main$ReqYearPopulation * 1000000
 P20main$P20pop = (P20main$P20Headcount)*(P20main$pop)
 P20main$P20average = P20main$PovertyLine -((P20main$PovertyLine*(P20main$PovGap)*P20main$pop)/P20main$P20pop)
