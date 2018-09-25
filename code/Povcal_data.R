@@ -55,6 +55,7 @@ load("data/SMYPovcalScrapeSept2018_low.RData")
 load("data/SMYPovcalScrapeSept2018_high.RData")
 load("data/AGGPovcalScrapeSept2018.RData")
 smy_total = rbind(smy_total_low,smy_total_high)
+smy_total=subset(smy_total, CoverageType %in% c("N","A"))
 
 #This code calculates p20 threshold
 #https://github.com/akmiller01/alexm-util/blob/master/DevInit/datahub_auto/povcal_calc.py
@@ -119,7 +120,7 @@ P20main$restaverage = (((P20main$Mean/(365/12))*P20main$pop)-(P20main$P20average
 
 #Calculate averages of NP20 and rest
 P20main$NP20pop = P20main$pop * .20
-P20main$NP20average = P20main$PovertyLine -((P20main$NP20.Threshold*(P20main$NP20PG)*P20main$pop)/P20main$NP20pop)
+P20main$NP20average = P20main$NP20.Threshold -((P20main$NP20.Threshold*(P20main$NP20PG)*P20main$pop)/P20main$NP20pop)
 P20main$restpop = P20main$pop - P20main$NP20pop
 P20main$Nrestaverage = (((P20main$Mean/(365/12))*P20main$pop)-(P20main$NP20average * P20main$NP20pop))/P20main$restpop
 
@@ -129,4 +130,4 @@ P20main=join(P20main, GlobalExtPov, by="RequestYear")
 
 
 write.csv(P20main,"data/P20incometrends.csv",row.names=FALSE,na="")
-
+write.csv(P20main,"E:/git/income_trends/data/P20incometrends.csv",row.names=FALSE,na="")
