@@ -115,6 +115,8 @@ ggplot(eap.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line
 
 
 
+
+
 #Country Check
 smy_2015=smy_total[which(smy_total$RequestYear==2015),]
 smy_2013=smy_total[which(smy_total$RequestYear==2013),]
@@ -239,6 +241,20 @@ names(GlobalExtPov)[which(names(GlobalExtPov)=="ConsumptionFloor")] <- "Global.C
 names(GlobalExtPov)[which(names(GlobalExtPov)=="hc")] <- "Global.Ext.HC"
 keep=c("requestYear","Global.Consumption.Floor","Global.Ext.HC")
 GlobalExtPov=GlobalExtPov[,keep,with=F]
+
+regional.LMpov=subset(agg_total, povertyLine==3.2)
+GlobalLMpov=subset(regional.LMpov,regionTitle=="World Total")
+names(GlobalLMpov)[which(names(GlobalLMpov)=="hc")] = "Global.LM.HC"
+GlobalLMpov=GlobalLMpov[,c("requestYear","Global.LM.HC"), with=F]
+
+regional.UMpov=subset(agg_total, povertyLine==5.5)
+GlobalUMpov=subset(regional.UMpov,regionTitle=="World Total")
+names(GlobalUMpov)[which(names(GlobalUMpov)=="hc")] = "Global.UM.HC"
+GlobalUMpov=GlobalUMpov[,c("requestYear","Global.UM.HC"),with=F]
+
+GlobalThreeLines=join_all(list(GlobalExtPov,GlobalLMpov,GlobalUMpov),by=c("requestYear"))
+
+
 regional.p20 = data.table(agg_total)[,.SD[which.min(diff)],by=.(regionTitle,requestYear)]
 WorldP20threshold = subset(regional.p20, regionTitle=="World Total")
 WorldP20threshold$P20Threshold = WorldP20threshold$povertyLine
@@ -249,11 +265,20 @@ WorldP20threshold$Restaverage=((WorldP20threshold$mean/(365/12)*WorldP20threshol
 
 
 World=WorldP20threshold[,c("requestYear","P20average","ConsumptionFloor","Restaverage")]
-World=join(World,GlobalExtPov,by=c("requestYear"))
+World=join(World,GlobalThreeLines,by=c("requestYear"))
 World=World[order(World$requestYear),]
-World[,c("P20_growth","rest_growth","yrchange"):=list(c(NA,diff(.SD$P20average)),c(NA,diff(.SD$Restaverage)),c(NA,diff(.SD$requestYear)))]
+World[,c("P20_growth","rest_growth","ext.hc.growth","lm.hc.growth","um.hc.gowth","yrchange"):=
+        list(c(NA,diff(.SD$P20average))
+             ,c(NA,diff(.SD$Restaverage))
+             ,c(NA,diff(.SD$Global.Ext.HC))
+             ,c(NA,diff(.SD$Global.LM.HC))
+             ,c(NA,diff(.SD$Global.UM.HC))
+             ,c(NA,diff(.SD$requestYear)))]
 World$P20_rate=(World$P20_growth/World$yrchange)/World$P20average
 World$Rest_rate=(World$rest_growth/World$yrchange)/World$Restaverage
+World$ext_hc_rate=(World$ext.hc.growth/World$yrchange)
+World$lm_hc_rate=(World$lm.hc.growth/World$yrchange)
+World$um_hc_rate=(World$um.hc.growth/World$yrchange)
 
 ggplot(World, aes(x=requestYear))+
   geom_line(aes(x=requestYear,y=Rest_rate,color="Rest_rate"))+
@@ -265,6 +290,8 @@ ggplot(WorldP20threshold[which(WorldP20threshold$requestYear==2013|WorldP20thres
   geom_line(aes(x=requestYear,y=P20average))+
   labs(x="Year",y="Average daily income per capita\n$2011 PPP",title="The gap between the P20 and the rest of the population is growing")+
   theme_classic()
+
+
 
 
 ggplot(World[which(World$requestYear>=1999),], aes(x=requestYear))+
