@@ -269,3 +269,49 @@ forecasts$plusonepop=(forecasts$PlusOneHC2030*forecasts$pop2030)
 forecasts$MinusOneHC2030=as.numeric(forecasts$MinusOneHC2030)
 forecasts$minusonepop=(forecasts$MinusOneHC2030*forecasts$pop2030)
 forecasts$basepoorpop2020=forecasts$BaseHC2020*forecasts$pop2020
+
+# otherfactors=read.csv("C:/Users/Zach/Documents/NCLB final/oldrankings2018StatesofFrag.csv")
+# StatesofFrag=otherfactors[,c("Short.Name","OECD.Fragility.2rank")]
+# StatesofFrag$CountryName=unfactor(StatesofFrag$Short.Name)
+# StatesofFrag=StatesofFrag[,c("CountryName","OECD.Fragility.2rank")]
+# names(StatesofFrag)=c("CountryName","OECD.Fragility.Rank")
+# 
+# 
+# 
+# 
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="The Bahamas")]="Bahamas"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Brunei")]="Brunei Darussalam"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Congo")]="Congo, Republic of"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Côte d'Ivoire")]="Cote d'Ivoire"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Lao PDR")]="Lao People's Democratic Republic"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Dem. Rep. Congo")]="Congo, Democratic Republic of"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Egypt")]="Egypt, Arab Republic of"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="The Gambia")]="Gambia, The"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Iran")]="Iran, Islamic Republic of"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Russia")]="Russian Federation"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="São Tomé and Principe")]="Sao Tome and Principe"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Venezuela")]="Venezuela, Republica Bolivariana de"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Yemen")]="Yemen, Republic of"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Macedonia")]="Macedonia, former Yugoslav Republic of"
+# StatesofFrag$CountryName[which(StatesofFrag$CountryName=="Korea")]="Korea, Republic of"
+# 
+# 
+# setdiff(StatesofFrag$CountryName,forecasts$CountryName)
+# setdiff(forecasts$CountryName,StatesofFrag$CountryName)
+# 
+# write.csv(StatesofFrag,"data/StatesofFragility2018.csv",row.names = F,na="")
+
+statesoffrag=read.csv("data/StatesofFragility2018.csv")
+statesoffrag$frag=0
+statesoffrag$frag[which(statesoffrag$OECD.Fragility.Rank<57)]=1
+statesoffrag=statesoffrag[,c("CountryName","frag")]
+
+forecasts=join(forecasts,statesoffrag,by=c("CountryName"))
+
+data.table(forecasts)[,.(
+  poorpop2020=sum(basepoorpop2020, na.rm=T)
+),by=c("frag")]
+
+forecasts=forecasts[,c("CountryName","basepoorpop2020","frag")]
+
+write.csv(forecasts,"data/poorpops_2020.csv", row.names=F,na="")
