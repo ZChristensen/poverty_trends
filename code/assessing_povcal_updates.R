@@ -14,9 +14,9 @@ lapply(list.of.packages, require, character.only=T)
 wd = paste0(prefix,"/git/poverty_trends/")
 setwd(wd)
 
-load("data/AGGPovcalScrape1May2018.RData")
-load("data/SMYPovcalScrape1May2018_low.RData")
-load("data/SMYPovcalScrape1May2018_high.RData")
+# load("data/AGGPovcalScrape1May2018.RData")
+# load("data/SMYPovcalScrape1May2018_low.RData")
+# load("data/SMYPovcalScrape1May2018_high.RData")
 
 agg_total=unique(agg_total)
 
@@ -280,24 +280,31 @@ World$ext_hc_rate=(World$ext.hc.growth/World$yrchange)
 World$lm_hc_rate=(World$lm.hc.growth/World$yrchange)
 World$um_hc_rate=(World$um.hc.growth/World$yrchange)
 
-ggplot(World, aes(x=requestYear))+
+p=ggplot(World, aes(x=requestYear))+
   geom_line(aes(x=requestYear,y=Rest_rate,color="Rest_rate"))+
   geom_line(aes(x=requestYear,y=P20_rate,color="P20_rate"))+
   labs(x="Year",y="Growth rate of average income")+
-  theme_classic()
-ggplot(WorldP20threshold[which(WorldP20threshold$requestYear==2013|WorldP20threshold$requestYear==2015),], aes(x=requestYear))+
-  geom_line(aes(x=requestYear,y=Restaverage))+
-  geom_line(aes(x=requestYear,y=P20average))+
+  scale_y_continuous(labels=scales::percent)+
+  theme_classic()+
+  theme(legend.title=element_blank())
+ggsave("data/graphics/ave_growth_rt_P20_rest.jpg",p)
+p=ggplot(WorldP20threshold, aes(x=requestYear))+
+  geom_line(aes(x=requestYear,y=Restaverage,color="Restaverage"))+
+  geom_line(aes(x=requestYear,y=P20average,color="P20average"))+
+  scale_y_continuous(labels=scales::dollar)+
   labs(x="Year",y="Average daily income per capita\n$2011 PPP",title="The gap between the P20 and the rest of the population is growing")+
-  theme_classic()
+  theme_classic()+
+  theme(legend.title=element_blank())
+ggsave("data/graphics/p20_rest_gap_trends.jpg",p)
 
 
 
-
-ggplot(World[which(World$requestYear>=1999),], aes(x=requestYear))+
+p=ggplot(World[which(World$requestYear>=1999),], aes(x=requestYear))+
   geom_line(aes(x=requestYear,y=Global.Consumption.Floor))+
   labs(x="Year",y="Consumption per capita\n$2011 PPP",title="The global consumption floor is declining")+
+  scale_y_continuous(labels=scales::dollar)+
   theme_classic()
+ggsave("data/graphics/consumpton_floor_Ravallion_1999_2015.jpg",p)
 
 ##Looking at modal consumption levels
 
