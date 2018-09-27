@@ -229,7 +229,9 @@ ggplot(masterwide[which(masterwide$HC!=100),],aes(x=HC))+
   labs(x="Global Income Percentile",y="Income growth rate\n2013-2015")+
   scale_y_continuous(labels= scales::percent)+
   theme_classic()
-  
+elephant=masterwide[,c("HC","growth13to15rt")] 
+elephant=elephant[which(elephant$HC!=100),]
+write.csv(elephant,"data/elephant_curve_13to15.csv",row.names=F,na="")
 
 
 #Consumption floor calculations
@@ -297,7 +299,9 @@ p=ggplot(WorldP20threshold, aes(x=requestYear))+
   theme(legend.title=element_blank())
 ggsave("data/graphics/p20_rest_gap_trends.jpg",p)
 
-
+gapgraph=World[,c("requestYear","Restaverage","P20average")]
+gapgraph=gapgraph[which(gapgraph$requestYear>1999)]
+write.csv(gapgraph,"data/P20_Rest_income_trends.csv",row.names=F, na="")
 
 p=ggplot(World[which(World$requestYear>=1999),], aes(x=requestYear))+
   geom_line(aes(x=requestYear,y=Global.Consumption.Floor))+
@@ -305,6 +309,9 @@ p=ggplot(World[which(World$requestYear>=1999),], aes(x=requestYear))+
   scale_y_continuous(labels=scales::dollar)+
   theme_classic()
 ggsave("data/graphics/consumpton_floor_Ravallion_1999_2015.jpg",p)
+consumption_floor=World[which(World$requestYear>=1999),]
+consumption_floor=consumption_floor[,c("requestYear","Global.Consumption.Floor")]
+write.csv(consumption_floor,"data/consumption_floor_1999_2015.csv",row.names=F,na="")
 
 ##Looking at modal consumption levels
 
