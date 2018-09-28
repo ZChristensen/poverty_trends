@@ -321,7 +321,23 @@ cfloor=data.table(agg_total[which(agg_total$povertyLine<10)])[,.SD[which.max(Hdi
 
 ggplot(cfloor, aes(x=requestYear,group=regionCID,color=regionCID))+
   geom_line(aes(x=requestYear,y=povertyLine))+
-  labs(x="Year",y="Daily consumption per capita\n$2011 PPP",title="Consumption Floor\nlargest population at a given poverty line")+
+  labs(x="Year",y="Daily consumption per capita\n$2011 PPP",title="Consumption Floor\nbased on modal income")+
   theme_classic()
 
+World2=World[,c("requestYear","Global.Consumption.Floor")]
+cfloor=cfloor[,c("regionCID","requestYear","povertyLine")]
+cfloor=cfloor[which(cfloor$regionCID=="WLD"),]
+cfloor=join(cfloor,World2,by=c("requestYear"))
 
+names(cfloor)=c("regionCode","Year","Modal.Consumption.Floor","Ravallion.Consumption.Floor")
+floorcomparisons=ggplot(cfloor[which(cfloor$Year>=1999),], aes(x=requestYear,group=regionCode,color=regionCode))+
+  geom_line(aes(x=Year,y=Ravallion.Consumption.Floor,color="Ravallion.Consumption.Floor"))+
+  geom_line(aes(x=Year,y=Modal.Consumption.Floor,color="Modal.Consumption.Floor"))+
+  labs(x="Year",y="Daily consumption per capita\n$2011 PPP",title="Comparison of Consumption Floor estimates")+
+  scale_y_continuous(labels=scales::dollar)+
+  theme_classic()+
+  theme(legend.title=element_blank())
+
+ggsave("data/graphics/comparisons_consumption_floors.jpg",floorcomparisons)
+
+write.csv(cfloor,"data/modal_consumption_floor.csv",row.names=F, na="")
