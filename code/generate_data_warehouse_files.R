@@ -43,7 +43,8 @@ povcalcutslong=subset(povcalcutslong,!is.na(CountryName))
 povcalcutslong=povcalcutslong[order(povcalcutslong$CountryName,povcalcutslong$RequestYear),]
 povcalcutslong=join(povcalcutslong,metadata,by="CountryName",type="left")
 # povcalcutslong$pop=as.numeric(povcalcutslong$Populations)*1000000
-povcalcutslong$ExtPovPop= povcalcutslong$ExtPovHC * povcalcutslong$pop
+povcalcutslong$ExtPovPop= round(povcalcutslong$ExtPovHC * povcalcutslong$pop)
+povcalcutslong$P20pop=round(povcalcutslong$P20pop)
 dat=data.table(povcalcutslong)[,.(
                                   Year=RequestYear
                                   ,ExtPovHC=ExtPovHC
@@ -53,9 +54,11 @@ dat=data.table(povcalcutslong)[,.(
                                   ,ModeratePovertyPercentage.Interp=na.approx(LMPovHC,rule=2)
                                   ,Poorpop=ExtPovPop,Poorpop.Interp=na.approx(ExtPovPop,rule=2)
                                   ,P20percentage=P20Headcount
-                                  ,P20population=P20pop,Depth.Of.Extreme.Poverty=PovGap
+                                  ,P20population=P20pop
+                                  ,Depth.Of.Extreme.Poverty=PovGap
                                   
                                   ),by=.(di_id)]
+
 
 dat$problem=NA
 dat$problem[which(dat$P20percentage>dat$ExtPovHC & dat$P20population<dat$Poorpop)]=1
