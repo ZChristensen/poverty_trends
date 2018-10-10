@@ -20,27 +20,44 @@ list_index = 1
 
 load("data/povcal_list_tmp.RData")
 
-for(povline in c(1.90
-  # seq(from=0,to=10,by=0.01),
-  # seq(from=10.25,to=25.5,by=0.25),
-  # seq(from=25.525,to=35.5,by=0.025),
-  # seq(from=36,to=500,by=1),
-  # seq(from=505,to=800,by=5)
+for(povline in c(
+  seq(from=0,to=10,by=0.01),
+  seq(from=10.25,to=25.5,by=0.25),
+  seq(from=25.525,to=35.5,by=0.025),
+  seq(from=36,to=500,by=1),
+  seq(from=505,to=800,by=5)
   )){
   message(povline)
-  agg = povcal_agg(pl=povline)
   smy = povcal_smy(pl=povline)
-  agg_results[[list_index]] = agg
   smy_results[[list_index]] = smy
   list_index=list_index+1
 }
 
-# save(agg_results,smy_results,list_index,file="data/povcal_list_tmp.RData")
-# 
-# agg_total=rbindlist(agg_results)
-# smy_total=rbindlist(smy_results)
-# save(smy_total,file="data/SMYPovcalScrapeSept2018.RData")
-# save(agg_total,file="data/AGGPovcalScrapeSept2018.RData")
+save(smy_results,list_index,file="data/povcal_list_tmp.RData")
+
+smy_total=rbindlist(smy_results)
+
+
+
+save(smy_total,file="data/SMYPovcalScrapeSept2018_svyYear.RData")
+
+requestyears=c(
+  1981
+  ,1984
+  ,1987
+  ,1990
+  ,1993
+  ,1996
+  ,1999
+  ,2002
+  ,2005
+  ,2008
+  ,2010
+  ,2011
+  ,2012
+  ,2013
+  ,2015
+)
 # smy_total_low = subset(smy_total,PovertyLine<=10)
 # smy_total_high = subset(smy_total,PovertyLine>10)
 # save(smy_total_low,file="data/SMYPovcalScrapeSept2018_low.RData")
