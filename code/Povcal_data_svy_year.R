@@ -12,36 +12,36 @@ if(.Platform$OS.type == "unix"){
 }
 wd = paste0(prefix,"/git/poverty_trends")
 setwd(wd)
-source("code/povcal_api_survey_years.R")
+# source("code/povcal_api_survey_years.R")
+# 
+# agg_results = list()
+# smy_results = list()
+# list_index = 1
+# 
+# load("data/povcal_list_tmp.RData")
+# 
+# for(povline in c(
+#   seq(from=0,to=10,by=0.01),
+#   seq(from=10.25,to=25.5,by=0.25),
+#   seq(from=25.525,to=35.5,by=0.025),
+#   seq(from=36,to=500,by=1),
+#   seq(from=505,to=800,by=5)
+#   )){
+#   message(povline)
+#   smy = povcal_smy(pl=povline)
+#   smy_results[[list_index]] = smy
+#   list_index=list_index+1
+# }
+# 
+# save(smy_results,list_index,file="data/povcal_list_tmp.RData")
+# 
+# smy_total=rbindlist(smy_results)
+# 
+# 
+# 
+# save(smy_total,file="data/SMYPovcalScrapeSept2018_svyYear.RData")
 
-agg_results = list()
-smy_results = list()
-list_index = 1
-
-load("data/povcal_list_tmp.RData")
-
-for(povline in c(
-  seq(from=0,to=10,by=0.01),
-  seq(from=10.25,to=25.5,by=0.25),
-  seq(from=25.525,to=35.5,by=0.025),
-  seq(from=36,to=500,by=1),
-  seq(from=505,to=800,by=5)
-  )){
-  message(povline)
-  smy = povcal_smy(pl=povline)
-  smy_results[[list_index]] = smy
-  list_index=list_index+1
-}
-
-save(smy_results,list_index,file="data/povcal_list_tmp.RData")
-
-smy_total=rbindlist(smy_results)
-
-
-
-save(smy_total,file="data/SMYPovcalScrapeSept2018_svyYear.RData")
-
-requestyears=c(
+linedupyears=c(
   1981
   ,1984
   ,1987
@@ -60,18 +60,20 @@ requestyears=c(
 )
 # smy_total_low = subset(smy_total,PovertyLine<=10)
 # smy_total_high = subset(smy_total,PovertyLine>10)
-# save(smy_total_low,file="data/SMYPovcalScrapeSept2018_low.RData")
-# save(smy_total_high,file="data/SMYPovcalScrapeSept2018_high.RData")
+# save(smy_total_low,file="data/SMYPovcalScrapeSept2018svy_low.RData")
+# save(smy_total_high,file="data/SMYPovcalScrapeSept2018svy_high.RData")
 
 # load("C:/Users/Zach/Documents/Poverty data/SMYPovcalScrape1May2018.RData")
 # load("C:/Users/Zach/Documents/Poverty data/AGGPovcalScrape1May2018.RData")
 # wd="C:/Users/Zach/Documents/Poverty data"
 # setwd(wd)
+load("data/SMYPovcalScrapeSept2018_svyYear.RData")
+smy_svy=smy_total[which(!smy_total$RequestYear %in% linedupyears)]
 
 load("data/SMYPovcalScrapeSept2018_low.RData")
 load("data/SMYPovcalScrapeSept2018_high.RData")
 load("data/AGGPovcalScrapeSept2018.RData")
-smy_total = rbind(smy_total_low,smy_total_high)
+smy_total = rbind(smy_total_low,smy_total_high,smy_svy)
 smy_total=subset(smy_total, CoverageType %in% c("N","A"))
 
 #This code calculates p20 threshold
@@ -118,16 +120,16 @@ names(smy_UMpov)[which(names(smy_UMpov)=="HeadCount")] <- "UMPovHC"
 smy_UMpov$PovertyLine = NULL
 smy_UMpov$ConsumptionFloor = NULL
 
-dfs <- list(smy_P20,smy_extremepov,smy_LMpov,smy_UMpov,countries.np20)
+dfs <- list(smy_extremepov,smy_LMpov,smy_UMpov,countries.np20)
 P20main<- join_all(dfs,by=c("RequestYear","CountryCode","CountryName"))
-
+P20main<- join(P20main,smy_P20,by=c("RequestYear","CountryCode","CountryName"))
 rm("smy_P20","smy_extremepov","smy_LMpov","smy_UMpov","countries.np20")
 gc()
 
 
 #Calculate averages of P20 and rest
 P20main= data.frame(P20main)
-P20main=P20main[which(P20main$CoverageType %in% c("A","N")),]
+P20main=P20main[which(P20main$CoverageType %in% c("A","N")|!P20main$RequestYear %in% linedupyears),]
 P20main$pop = P20main$ReqYearPopulation * 1000000
 P20main$P20pop = (P20main$P20Headcount)*(P20main$pop)
 P20main$P20average = P20main$PovertyLine -((P20main$PovertyLine*(P20main$PovGap)*P20main$pop)/P20main$P20pop)
