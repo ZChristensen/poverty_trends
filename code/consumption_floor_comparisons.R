@@ -109,6 +109,15 @@ write.csv(consumption_floor,"data/consumption_floor_1999_2015.csv",row.names=F,n
 agg_total=agg_total[order(agg_total$regionCID,agg_total$requestYear,agg_total$povertyLine),]
 agg_total[,c("Hdiff"):=list(c(NA,diff(.SD$hc))),by=c("regionCID","requestYear")]
 cfloor=data.table(agg_total[which(agg_total$povertyLine<10)])[,.SD[which.max(Hdiff)],by=c("regionCID","requestYear")]
+cfloor$PLminus=cfloor$povertyLine-.01
+cfloorminus1=cfloor[,c("PLminus","regionCID","requestYear")]
+agg_total2=join(agg_total,cfloorminus1,by=c("regionCID","requestYear"))
+cfloorminus=agg_total2[which(agg_total2$PLminus==agg_total2$povertyLine),]
+cfloorminus$hcminus=cfloorminus$hc
+cfloorminus=cfloorminus[,c("hcminus","regionCID","requestYear")]
+cfloor=join(cfloor,cfloorminus,by=c("regionCID","requestYear"))
+cfloor$densitymode=cfloor$hc-cfloor$hcminus
+cfloor$modalconsumptionfloor=
 
 ggplot(cfloor, aes(x=requestYear,group=regionCID,color=regionCID))+
   geom_line(aes(x=requestYear,y=povertyLine))+

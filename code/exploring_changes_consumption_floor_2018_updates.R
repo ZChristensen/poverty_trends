@@ -1,0 +1,86 @@
+list.of.packages <- c("Hmisc","foreign","data.table","plyr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+lapply(list.of.packages, require, character.only=T)
+
+if(.Platform$OS.type == "unix"){
+  prefix = "~"
+}else{
+  prefix = "E:"
+}
+
+wd = paste0(prefix,"/git/poverty_trends/")
+setwd(wd)
+
+
+
+load("data/AGGPovcalScrape1May2018.RData")
+load("data/SMYPovcalScrape1May2018_low.RData")
+load("data/SMYPovcalScrape1May2018_high.RData")
+
+agg_total=unique(agg_total)
+
+
+regional.extpov = subset(agg_total, PovertyLine==1.90)
+
+old_regional=agg_total
+
+
+old_regional$P2=as.numeric(old_regional$P2)
+old_regional$PG=as.numeric(old_regional$PG)
+old_regional$H=as.numeric(old_regional$H)
+old_regional$PovertyLine=as.numeric(old_regional$PovertyLine)
+old_regional$oldConsumptionFloor = old_regional$PovertyLine*(1-(old_regional$P2/old_regional$PG))
+old.agg.extpov=subset(old_regional,PovertyLine==1.90 & RegionTitle=="World Total")
+old.consumption.floor=old.agg.extpov[,c("RequestYear","oldConsumptionFloor")]
+old.consumption.floor$oldConsumptionFloor=round(old.consumption.floor$oldConsumptionFloor,digits=2)
+
+smy_total=rbind(smy_high,smy_low)
+
+
+smy_total=unfactor(data.frame(smy_total))
+old_smy= subset(smy_total, displayMode==0|displayMode==2|displayMode==4|displayMode==5)
+old_smy$CountryName[which(old_smy$CountryName=="Swaziland")]="Eswatini"
+old_smy=join(old_smy,old.consumption.floor, by="RequestYear")
+old_smy_consumption_floor=subset(old_smy, PovertyLine==oldConsumptionFloor)
+
+load("data/AGGPovcalScrapeSept2018.RData")
+load("data/SMYPovcalScrapeSept2018_low.RData")
+load("data/SMYPovcalScrapeSept2018_high.RData")
+
+
+smy_total=rbind(smy_total_high,smy_total_low)
+smy_total=smy_total[which(smy_total$CoverageType %in% c("N","A")),]
+
+
+agg_total$newConsumptionFloor = agg_total$povertyLine*(1-(agg_total$p2/agg_total$pg))
+new.agg.extpov=subset(agg_total,povertyLine==1.90 & regionTitle=="World Total")
+new.consumption.floor=new.agg.extpov[,c("requestYear","newConsumptionFloor")]
+new.consumption.floor$newConsumptionFloor=round(new.consumption.floor$newConsumptionFloor,digits=2)
+names(new.consumption.floor)=c("RequestYear","newConsumptionFloor")
+
+smy_total=join(smy_total, new.consumption.floor, by="RequestYear")
+new_smy_consumption_floor=subset(smy_total, PovertyLine==newConsumptionFloor)
+new_smy_consumption_floor=new_smy_consumption_floor[,c("CountryCode","RequestYear","DataYear","HeadCount","PovGap","PovGapSqr")]
+names(new_smy_consumption_floor)=c("CountryCode","RequestYear","newDataYear","newHeadCount","newPovGap","newPovGapSqr")
+new_smy_consumption_floor$newHeadCount=new_smy_consumption_floor$newHeadCount * 100
+
+smy_comparisons=join(old_smy_consumption_floor,new_smy_consumption_floor,by=c("CountryCode","RequestYear"))
+smy_comparisons$H=as.numeric(smy_comparisons$H)
+smy_comparisons$Hdiff=smy_comparisons$H-smy_comparisons$newHeadCount
+diffs=smy_comparisons[which(smy_comparisons$Hdiff>0),]
+
+
+#Compare SMYs at 1.90
+old_smy_ext=old_smy[which(old_smy$PovertyLine==1.9),]
+old_smy_ext=old_smy_ext[,c("CountryCode","CountryName","RequestYear","H","PG","P2","DataYear","oldConsumptionFloor")]
+new_smy_ext=smy_total[which(smy_total$PovertyLine==1.9),]
+new_smy_ext=new_smy_ext[,c("CountryCode","RequestYear","HeadCount","PovGap","PovGapSqr","newConsumptionFloor")]
+comparisons190=join(new_smy_ext,old_smy_ext, by=c("CountryCode","RequestYear"))
+comparisons190$oldHeadcount=as.numeric(comparisons190$H)/100
+comparisons190$hcdiff=comparisons190$oldHeadcount-comparisons190$HeadCount
+diff190s=comparisons190[which(comparisons190$hcdiff!=0),]
+diff190s$changepercent=diff190s$hcdiff/as.numeric(diff190s$H)
+diff190s=diff190s[,c("CountryName","HeadCount","RequestYear","oldHeadcount","changepercent")]
+write.csv(diff190s,)
+#top differences are in China and India

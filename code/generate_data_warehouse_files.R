@@ -14,6 +14,7 @@ setwd(wd)
 
 povcalcuts <- read.csv("data/P20incometrends.csv",as.is=TRUE)
 
+
 metadata <- read.csv("data/metadata.csv",as.is=TRUE,na.strings="")
 metadata=metadata[,c("PovcalNet.name","di_id")]
 metadata=subset(metadata, di_id!="#N/A" & PovcalNet.name!="#N/A")
@@ -73,7 +74,8 @@ if(nrow(probs)>0){
   stop("something went wrong with interpolations")
 }
 
-dat$ExtPovHC.Interp.Trunc[which(dat$Year>2013)]=NA
+dat$ExtPovHC.Interp.Trunc[which(dat$Year>2015)]=dat$ExtPovHC[which(dat$Year>2015)]
+
 
 
 poor_pop =dat[,c("di_id","Year","ExtPovHC","ExtPovHC.Interp.Trunc","ExtPovHC.Interp"),with=F]
