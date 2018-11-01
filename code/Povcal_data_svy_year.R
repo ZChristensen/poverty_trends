@@ -39,7 +39,7 @@ setwd(wd)
 # 
 # 
 # 
-#  save(smy_total,file="data/SMYPovcalScrapeSept2018_svyYear.RData")
+# save(smy_total,file="data/SMYPovcalScrapeSept2018_svyYear.RData")
 
 linedupyears=c(
   1981
@@ -68,47 +68,16 @@ linedupyears=c(
 # wd="C:/Users/Zach/Documents/Poverty data"
 # setwd(wd)
 load("data/SMYPovcalScrapeSept2018_svyYear.RData")
-smy_total=unique(smy_total)
 smy_svy=smy_total[which(!smy_total$RequestYear %in% linedupyears)]
-smy_svy=smy_svy[which(smy_svy$PovertyLine>0),]
-dropped=c(
-"LVA_N2007X"
-,"LVA_N2004X"
-,"LVA_N2009X"
-,"LTU_N2004X"
-,"HRV_N2009X"
-,"HUN_N2006X"
-,"HRV_N2006X"
-,"MEX_N1998Y"
-,"MEX_N2000Y"
-,"MEX_N1992Y"
-,"MEX_N1994Y"
-,"MEX_N2004Y"
-,"MEX_N2006Y"
-,"MEX_N2014Y"
-,"MEX_N2016Y"
-,"POL_N2004Y"
-,"POL_N2006Y"
-,"POL_N2007Y"
-,"POL_N2009Y"
-,"POL_N2014Y"
-,"EST_N2003X"
-,"EST_N2004X"
-,"SVK_N2004X"
-,"SVK_N2006X"
-,"SVK_N2007X"
-,"SVK_N2009X"
-)
-
-
-
-smy_svy=smy_svy[which(!smy_svy$SvyInfoID %in% dropped),]
 
 load("data/SMYPovcalScrapeSept2018_low.RData")
 load("data/SMYPovcalScrapeSept2018_high.RData")
 load("data/AGGPovcalScrapeSept2018.RData")
 smy_total = rbind(smy_total_low,smy_total_high,smy_svy)
 smy_total=subset(smy_total, CoverageType %in% c("N","A"))
+
+#This code calculates p20 threshold
+#https://github.com/akmiller01/alexm-util/blob/master/DevInit/datahub_auto/povcal_calc.py
 
 
 agg_total$ConsumptionFloor = agg_total$povertyLine*(1-(agg_total$p2/agg_total$pg))
