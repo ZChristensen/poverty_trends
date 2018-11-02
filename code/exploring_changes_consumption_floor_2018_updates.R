@@ -1,4 +1,4 @@
-list.of.packages <- c("Hmisc","foreign","data.table","plyr")
+list.of.packages <- c("Hmisc","foreign","data.table","plyr","varhandle","WDI")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, require, character.only=T)
@@ -40,6 +40,7 @@ smy_total=rbind(smy_high,smy_low)
 
 smy_total=unfactor(data.frame(smy_total))
 old_smy= subset(smy_total, displayMode==0|displayMode==2|displayMode==4|displayMode==5)
+old_smy= subset(old_smy, CoverageType==5|CoverageType==3)
 old_smy$CountryName[which(old_smy$CountryName=="Swaziland")]="Eswatini"
 old_smy=join(old_smy,old.consumption.floor, by="RequestYear")
 old_smy_consumption_floor=subset(old_smy, PovertyLine==oldConsumptionFloor)
@@ -78,9 +79,21 @@ new_smy_ext=smy_total[which(smy_total$PovertyLine==1.9),]
 new_smy_ext=new_smy_ext[,c("CountryCode","RequestYear","HeadCount","PovGap","PovGapSqr","newConsumptionFloor")]
 comparisons190=join(new_smy_ext,old_smy_ext, by=c("CountryCode","RequestYear"))
 comparisons190$oldHeadcount=as.numeric(comparisons190$H)/100
+comparisons190$oldPG=as.numeric(comparisons190$PG)/100
+comparisons190$oldP2=as.numeric(comparisons190$P2)/100
 comparisons190$hcdiff=comparisons190$oldHeadcount-comparisons190$HeadCount
-diff190s=comparisons190[which(comparisons190$hcdiff!=0),]
-diff190s$changepercent=diff190s$hcdiff/as.numeric(diff190s$H)
-diff190s=diff190s[,c("CountryName","HeadCount","RequestYear","oldHeadcount","changepercent")]
-write.csv(diff190s,)
-#top differences are in China and India
+comparisons190$pgdiff=comparisons190$oldPG-comparisons190$PovGap
+comparisons190$p2diff=comparisons190$oldP2-comparisons190$PovGapSqr
+diff190s=comparisons190[which(abs(comparisons190$hcdiff)>.01| abs(comparisons190$pgdiff)>.01|abs(comparisons190$p2diff)>.01),]
+
+pops=WDI(country="all",indicator="SP.POP.TOTL",start=1981, end=2017,extra=TRUE)
+pops$country[which(pops$country=="Venezuela, RB")]="Venezuela, Republica Bolivariana de"
+pops$country[which(pops$country=="Micronesia, Fed. Sts.")]="Micronesia, Federated States of"
+pops=pops[,c("country","year","SP.POP.TOTL")]
+names(pops)=c("CountryName","RequestYear","Population")
+diff190s=join(diff190s,pops,by=c("CountryName","RequestYear"))
+diff190s$popshift=diff190s$hcdiff*diff190s$Population
+
+#comparing headcounts
+
+hc_at_floor=join(old_smy_consumption_floor,new_smy_consumption_floor,by=c("CountryCode","RequestYear"))

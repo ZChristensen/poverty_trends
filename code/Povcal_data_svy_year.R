@@ -98,6 +98,19 @@ dropped=c(
 ,"SVK_N2006X"
 ,"SVK_N2007X"
 ,"SVK_N2009X"
+,"BGR_N2007Y"
+,"HUN_N2007X"
+,"HUN_N2004X"
+,"NIC_N1998Y"
+,"NIC_N2001Y"
+,"PHL_N2000Y"
+,"PHL_N2003Y"
+,"PHL_N2006Y"
+,"PHL_N2008Y"
+,"PHL_N2009Y"
+,"ROU_N2006Y"
+,"ROU_N2007Y"
+,"ROU_N2009Y"
 )
 
 
@@ -109,6 +122,11 @@ load("data/SMYPovcalScrapeSept2018_high.RData")
 load("data/AGGPovcalScrapeSept2018.RData")
 smy_total = rbind(smy_total_low,smy_total_high,smy_svy)
 smy_total=subset(smy_total, CoverageType %in% c("N","A"))
+
+countrycount=smy_total[,.(count=nrow(.SD),svyids=paste(unique(SvyInfoID),collapse=", ")),by=.(CountryName,RequestYear)]
+if(nrow(countrycount[which(countrycount$count>2000),])>0){
+  stop("check for duplicate surveys")
+}
 
 
 agg_total$ConsumptionFloor = agg_total$povertyLine*(1-(agg_total$p2/agg_total$pg))

@@ -117,7 +117,6 @@ cfloorminus$hcminus=cfloorminus$hc
 cfloorminus=cfloorminus[,c("hcminus","regionCID","requestYear")]
 cfloor=join(cfloor,cfloorminus,by=c("regionCID","requestYear"))
 cfloor$densitymode=cfloor$hc-cfloor$hcminus
-cfloor$modalconsumptionfloor=
 
 ggplot(cfloor, aes(x=requestYear,group=regionCID,color=regionCID))+
   geom_line(aes(x=requestYear,y=povertyLine))+

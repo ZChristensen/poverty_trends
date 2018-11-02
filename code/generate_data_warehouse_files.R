@@ -14,6 +14,23 @@ setwd(wd)
 
 povcalcuts <- read.csv("data/P20incometrends.csv",as.is=TRUE)
 
+excelpovcal=read.csv("C:/Users/Zach/Downloads/CountryTable_1.9 (8).csv")
+excelpovcal=excelpovcal[which(excelpovcal$CoverageType %in% c("A","N")),]
+excelpovcal=excelpovcal[,c("PovGap","HeadCount","RequestYear","CountryName")]
+names(excelpovcal)=c("PovGapExcel","HeadCountExcel","RequestYear","CountryName")
+povcalcuts=join(povcalcuts,excelpovcal,by=c("RequestYear","CountryName"))
+povcalcuts$diff=povcalcuts$ExtPovHC-povcalcuts$HeadCountExcel
+
+diffs=povcalcuts[which(abs(povcalcuts$diff)>0),]
+if(nrow(diffs)>0){
+  stop("differences with extreme poverty headcounts")
+}
+povcalcuts$diff=povcalcuts$ExtPovGap-povcalcuts$PovGapExcel
+diffs=povcalcuts[which(abs(povcalcuts$diff)>0),]
+if(nrow(diffs)>0){
+  stop("differences with extreme poverty gaps")
+}
+
 
 metadata <- read.csv("data/metadata.csv",as.is=TRUE,na.strings="")
 metadata=metadata[,c("PovcalNet.name","di_id")]
@@ -56,7 +73,7 @@ dat=data.table(povcalcutslong)[,.(
                                   ,Poorpop=ExtPovPop,Poorpop.Interp=na.approx(ExtPovPop,rule=2)
                                   ,P20percentage=P20Headcount
                                   ,P20population=P20pop
-                                  ,Depth.Of.Extreme.Poverty=PovGap
+                                  ,Depth.Of.Extreme.Poverty=ExtPovGap
                                   
                                   ),by=.(di_id)]
 
