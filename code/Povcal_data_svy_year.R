@@ -149,7 +149,7 @@ setnames(WorldP20threshold2,"requestYear","RequestYear")
 smy_total=join(smy_total, WorldP20threshold2, by="RequestYear")
 smy_P20 = subset(smy_total, PovertyLine==P20Threshold)
 names(smy_P20)[which(names(smy_P20)=="HeadCount")] <- "P20Headcount"
-keep=c("CountryName","RequestYear","PovertyLine","HeadCount","CountryCode","ConsumptionFloor")
+keep=c("CountryName","RequestYear","PovertyLine","HeadCount","CountryCode","ConsumptionFloor","PovGap")
 smy_total2=smy_total[,keep,with=F]
 countries.np20 = data.table(smy_total)[,.SD[which.min(diff)],by=.(CountryCode,RequestYear)]
 names(countries.np20)[which(names(countries.np20)=="PovGap")] <- "NP20PG"
@@ -158,8 +158,10 @@ countries.np20=data.frame(countries.np20)[,keep]
 colnames(countries.np20)[colnames(countries.np20)=="PovertyLine"] <-"NP20.Threshold"
 smy_extremepov = subset(smy_total2,PovertyLine==1.90)
 names(smy_extremepov)[which(names(smy_extremepov)=="HeadCount")] <- "ExtPovHC"
+names(smy_extremepov)[which(names(smy_extremepov)=="PovGap")] <- "ExtPovGap"
 smy_extremepov$PovertyLine = NULL
 smy_extremepov$ConsumptionFloor = NULL
+smy_total2=smy_total2[,c("CountryName","RequestYear","PovertyLine","HeadCount","CountryCode","ConsumptionFloor")]
 smy_LMpov = subset(smy_total2,PovertyLine==3.20)
 names(smy_LMpov)[which(names(smy_LMpov)=="HeadCount")] <- "LMPovHC"
 smy_LMpov$PovertyLine = NULL
