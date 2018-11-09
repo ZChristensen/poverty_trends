@@ -1,11 +1,11 @@
 "CountryName","basepoorpop2020","frag"
 "Afghanistan",,1
 "Albania",0.003881069470086,0
-"Algeria",0.06729160502393,0
+"Algeria",0.07025005300929,0
 "Andorra",,0
-"Angola",4.4932866220161,1
+"Angola",7.1233063769727,1
 "Antigua and Barbuda",,0
-"Argentina",0.185516497005246,0
+"Argentina",0.225779683531743,0
 "Armenia",0.005125329473147,0
 "Aruba",,0
 "Australia",0.062758260412575,0
@@ -13,34 +13,34 @@
 "Azerbaijan",0,0
 "Bahamas",,0
 "Bahrain",,0
-"Bangladesh",0.0626914173541799,1
+"Bangladesh",0.0590839636784243,1
 "Barbados",,0
 "Belarus",0,0
 "Belgium",0,0
 "Belize",0.03864700108917,0
-"Benin",2.3215649627835,0
+"Benin",2.3038532816985,0
 "Bermuda",,0
-"Bhutan",0.0001378667925675,0
-"Bolivia",0.32602987267662,0
+"Bhutan",0.000203335884927,0
+"Bolivia",0.322729332783,0
 "Bosnia and Herzegovina",0.002703097651248,0
-"Botswana",0.10807117630748,0
-"Brazil",6.64669665650412,0
+"Botswana",0.10660415408866,0
+"Brazil",6.86265556035492,0
 "Brunei Darussalam",,0
 "Bulgaria",0.034200730789995,0
 "Burkina Faso",0.2314815521955,1
 "Burundi",9.3168820485703,1
-"Cabo Verde",0.00671040491916,0
+"Cabo Verde",0.00627944170488,0
 "Cambodia",,0
 "Cameroon",1.28935805502672,1
 "Canada",0.093017882509145,0
-"Central African Republic",2.6042614177362,1
-"Chad",4.4201764819971,1
-"Chile",0.167148990503857,0
+"Central African Republic",2.4342481474085,1
+"Chad",4.3337856921414,1
+"Chile",0.166734113504556,0
 "China",0.626349655239678,0
 "China, Taiwan Province of China",,
 "Colombia",1.083743935857,0
 "Comoros",0.08427013713867,1
-"Congo, Republic of",2.110670809965,1
+"Congo, Republic of",2.008749883491,1
 "Cook Islands",,
 "Costa Rica",0.03153666108411,0
 "Cote d'Ivoire",0.593368533175,1
@@ -49,152 +49,152 @@
 "Cyprus",0,0
 "Czech Republic",0,0
 "Dem. People's Republic of Korea",,
-"Congo, Democratic Republic of",35.5694116300005,1
+"Congo, Democratic Republic of",35.0364887127264,1
 "Denmark",0.0122744399568,0
 "Djibouti",0.03081342752946,1
 "Dominica",,0
 "Dominican Republic",0.017738414797374,0
-"Ecuador",0.4208591143982,0
+"Ecuador",0.4578542412083,0
 "Egypt, Arab Republic of",0.0304026761196696,1
-"El Salvador",0.032471154509398,0
+"El Salvador",0.03011592979054,0
 "Equatorial Guinea",,1
 "Eritrea",,1
 "Estonia",0.00610566930935,0
-"Ethiopia",0.39561305467267,1
+"Ethiopia",0.40806210703695,1
 "Fiji",0.000808786187277,0
 "Finland",0,0
 "France",0,0
-"Gabon",0.019740447295478,0
-"Gambia, The",0.03187916280619,1
-"Georgia",0.020308688988809,0
+"Gabon",0.021054114713016,0
+"Gambia, The",0.02827484681697,1
+"Georgia",0.018609218835955,0
 "Germany",0,0
 "Ghana",0.41192175222705,0
 "Greece",0.13873729560912,0
-"Guatemala",0.39910465360668,1
-"Guinea",0.49449304126122,1
-"Guinea-Bissau",0.4761073519434,1
+"Guatemala",0.3998669377654,1
+"Guinea",0.3143005672581,1
+"Guinea-Bissau",0.4714301295102,1
 "Guyana",0,0
-"Haiti",1.5155458512075,1
+"Haiti",1.502308654749,1
 "Holy See",,
-"Honduras",0.5431117506588,1
+"Honduras",0.56456459833005,1
 "Hungary",0.047170352895896,0
 "Iceland",0,0
-"India",0.401745637765591,0
-"Indonesia",0.111202572965825,0
-"Iran, Islamic Republic of",0.0173314066973566,1
-"Iraq",0.014395632587061,1
+"India",0.447674719153956,0
+"Indonesia",0.140466271845338,0
+"Iran, Islamic Republic of",0.0496698041326991,1
+"Iraq",0.02364593670567,1
 "Ireland",0.01120665037848,0
 "Israel",0.042129038278597,0
 "Italy",1.03399111564749,0
-"Jamaica",0.0255279336852,0
+"Jamaica",0.02719422916044,0
 "Japan",0.27928720909836,0
-"Jordan",0.0041707366097056,0
+"Jordan",0.0046965949979876,0
 "Kazakhstan",0,0
 "Kenya",2.60274657076294,1
 "Kiribati",0.0038671011321,0
 "Kuwait",,0
-"Kyrgyz Republic",0.01229534500698,0
+"Kyrgyz Republic",0.013087792347198,0
 "Lao People's Democratic Republic",0.0065098111068312,1
 "Latvia",0.008611492069013,0
 "Lebanon",0,0
-"Lesotho",0.9215734420019,0
-"Liberia",0.8860523585238,1
+"Lesotho",1.0405329555958,0
+"Liberia",0.924675255716,1
 "Libya",,1
 "Liechtenstein",,0
 "Lithuania",0.013945884746076,0
 "Luxembourg",0.001214903413504,0
-"Madagascar",11.8810525569972,1
+"Madagascar",12.0654954243156,1
 "Malawi",7.4631427275271,1
 "Malaysia",3.7774675025874e-05,0
-"Maldives",0.0003854631844404,0
-"Mali",1.1749879016176,1
+"Maldives",0.000501721997337,0
+"Mali",1.1264509015046,1
 "Malta",0,0
 "Marshall Islands",,0
 "Mauritania",0.047620817058123,1
 "Mauritius",0,0
-"Mexico",1.35420509652714,0
+"Mexico",1.37452790532601,0
 "Micronesia",,0
 "Micronesia, Federated States of",0.01029050724472,
 "Monaco",,0
 "Mongolia",0,0
 "Montenegro",0,0
 "Morocco",0.0225431892422058,0
-"Mozambique",10.018881052491,1
+"Mozambique",8.1656353200495,1
 "Myanmar",0.0365116072996096,1
 "Namibia",0.18593132260493,0
 "Nauru",,
-"Nepal",0.180854463659184,1
+"Nepal",0.145200875850576,1
 "Netherlands",0,0
 "New Zealand",,0
-"Nicaragua",0.02124631538172,0
-"Niger",1.36166969176553,1
-"Nigeria",76.5602891781966,1
+"Nicaragua",0.05156918702784,0
+"Niger",1.31116604153706,1
+"Nigeria",73.8841178901651,1
 "Niue",,
 "Norway",0,0
 "Oman",,0
-"Pakistan",0.0124622991337971,1
+"Pakistan",0.048061481047442,1
 "Palau",,0
 "Panama",0.00934983435137,0
-"Papua New Guinea",1.0523909833275,1
-"Paraguay",0.01195060556132,0
-"Peru",0.294259893081734,0
-"Philippines",0.035570667932624,0
+"Papua New Guinea",1.2494584628225,1
+"Paraguay",0.01184845469484,0
+"Peru",0.277915939189594,0
+"Philippines",0.0401680191191356,0
 "Poland",0,0
 "Portugal",0.050620209342899,0
 "Qatar",,0
 "Korea, Republic of",0.12839689632185,0
 "Moldova",0,0
 "Romania",0.28890191060598,0
-"Russian Federation",0.0263252571036226,0
+"Russian Federation",0.0252616658333486,0
 "Rwanda",0.48230014697997,1
-"St. Lucia",0.0329716797597,0
+"St. Lucia",0.0310135457808,0
 "Samoa",0,0
 "San Marino",,0
-"Sao Tome and Principe",0.00486611670561,0
+"Sao Tome and Principe",0.00594211653644,0
 "Saudi Arabia",,0
-"Senegal",0.63171728002268,0
+"Senegal",0.66069162744184,0
 "Serbia",0.002408089169343,0
 "Seychelles",0.000364571942288,0
-"Sierra Leone",2.5187561925273,1
+"Sierra Leone",3.2264604378774,1
 "Singapore",,0
 "Slovak Republic",0.0109443015082,0
 "Slovenia",0,0
-"Solomon Islands",0.05250002649535,1
+"Solomon Islands",0.05182133559085,1
 "Somalia",,1
-"South Africa",7.4053459334358,0
-"South Sudan",12.7686962512908,1
+"South Africa",7.5837762598752,0
+"South Sudan",13.0793092750476,1
 "Spain",0.340509093731676,0
 "Sri Lanka",0.0017890906007184,0
 "West Bank and Gaza",,1
-"Sudan",0.89616721720615,1
+"Sudan",2.88228525886619,1
 "Suriname",0.1029725656344,0
 "Swaziland",,1
 "Sweden",0.025247493071656,0
 "Switzerland",0,0
 "Syrian Arab Republic",,1
-"Tajikistan",0.028570311303468,1
+"Tajikistan",0.017871081450926,1
 "Macedonia, former Yugoslav Republic of",0.0631787607732,0
 "Thailand",0.0142995342081972,0
-"Timor-Leste",0.040664216544,1
-"Togo",1.3037203596196,0
+"Timor-Leste",0.088758652152,1
+"Togo",1.3145696321736,0
 "Tokelau",,
-"Tonga",0.000269576405859,0
-"Trinidad and Tobago",0.008333050572684,0
+"Tonga",0.000152369301843,0
+"Trinidad and Tobago",0.008700800886009,0
 "Tunisia",0.020028228536736,0
-"Turkey",0.0637217427228,0
+"Turkey",0.070244574867975,0
 "Turkmenistan",0.0018657459514135,0
 "Tuvalu",0,0
-"Uganda",2.62701634196589,1
+"Uganda",2.71185416943553,1
 "Ukraine",0.0049836732630826,0
 "United Arab Emirates",,0
 "United Kingdom",0.154332967441152,0
-"Tanzania",1.01619490462581,1
+"Tanzania",1.12320491439654,1
 "United States",3.85823425907808,0
-"Uruguay",0.0011542037137514,0
+"Uruguay",0.0012691197751947,0
 "Uzbekistan",0.22750779696785,0
 "Vanuatu",0.00962239684506,0
-"Venezuela, Republica Bolivariana de",12.2758384110648,1
+"Venezuela, Republica Bolivariana de",12.700116621984,1
 "Vietnam",0.0272381175817335,0
-"Yemen, Republic of",29.1332909937175,1
-"Zambia",6.879146622621,1
-"Zimbabwe",0.4180167587299,1
+"Yemen, Republic of",17.779194423126,1
+"Zambia",6.9391762022611,1
+"Zimbabwe",0.3120379298641,1
