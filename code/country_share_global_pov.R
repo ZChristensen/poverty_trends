@@ -75,8 +75,8 @@ poorpop2030=data.table(forecasts)[,.(
 )]
 forecasts$global_forecast_poorpops=poorpop2030$totalpoorpops2030
 forecasts$share_forecasted_pov=forecasts$basepoorpop/forecasts$global_forecast_poorpops
-forecasts=forecasts[,c("di_id","share_forecasted_pov","basepoorpop")]
+forecasts=forecasts[,c("CountryName","di_id","share_forecasted_pov","basepoorpop")]
 protracted=join(protracted,forecasts,by=c("di_id"))
 protracted$poorpop2030=protracted$basepoorpop*1000000
-protracted=protracted[,c("di_id","Poorpop","shareofpoor","share_forecasted_pov","poorpop2030")]
+protracted=protracted[,c("CountryName","di_id","Poorpop","shareofpoor","share_forecasted_pov","poorpop2030")]
 write.csv(protracted,"data/share_of_poor_in_protracted_crises.csv",row.names=F,na="")

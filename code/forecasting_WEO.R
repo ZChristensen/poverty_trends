@@ -52,6 +52,10 @@ smy_total=rbind(smy_total_high,smy_total_low)
 
 
 smy_total=smy_total[which(smy_total$RequestYear==2015),]
+som=(1+((WEO$growthforecast[which(WEO$CountryName=="Somalia")])/100))^12
+print(som)
+afg=(1+((WEO$growthforecast[which(WEO$CountryName=="Afghanistan")])/100))^12
+print(afg)
 merge.dat=join(smy_total, WEO, by="CountryName")
 
 merge.dat$pl2020 = merge.dat$PovertyLine*(1+(merge.dat$growth15to20/100))^5
@@ -72,9 +76,13 @@ merge.dat=merge.dat[,c("CountryName"
                        ,"minusonediff"
                        ,"RegionCode")]
 
+
 base=data.table(merge.dat)[,.SD[which.min(basediff)],by=.(CountryName)]
 names(base)[which(names(base)=="HeadCount")]="BaseHC2030"
 base=base[,c("CountryName","BaseHC2030","RegionCode")]
+somalia=data.frame(CountryName="Somalia",BaseHC2030=".302",RegionCode="SSA")
+afghanistan=data.frame(CountryName="Afghanistan",BaseHC2030=".144",RegionCode="SAS")
+base=rbind(base,somalia,afghanistan)
 base=as.data.frame(base)
 plusone=data.table(merge.dat)[,.SD[which.min(plusonediff)],by=.(CountryName)]
 names(plusone)[which(names(plusone)=="HeadCount")]="PlusOneHC2030"
