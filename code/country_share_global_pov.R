@@ -16,11 +16,11 @@ setwd(wd)
 
 poorpopulations=read.csv("data/data_warehouse/pop_in_poverty.csv")
 poorpopulations=subset(poorpopulations,Year==2015)
-af2015poorpop=(33736.49*.33)*1000
-so2015poorpop=(13908.13*.717)*1000
-so=data.frame(di_id="SO",Year="2015",Poorpop=so2015poorpop,Poorpop.Interp="",P20population="")
-af=data.frame(di_id="AF",Year="2015",Poorpop=af2015poorpop,Poorpop.Interp="",P20population="")
-poorpopulations=rbind(poorpopulations,so,af)
+# af2015poorpop=(33736.49*.33)*1000
+# so2015poorpop=(13908.13*.717)*1000
+# so=data.frame(di_id="SO",Year="2015",Poorpop=so2015poorpop,Poorpop.Interp="",P20population="")
+# af=data.frame(di_id="AF",Year="2015",Poorpop=af2015poorpop,Poorpop.Interp="",P20population="")
+# poorpopulations=rbind(poorpopulations,so,af)
 
 load("data/AGGPovcalScrapeSept2018.RData")
 global=agg_total[which(agg_total$requestYear==2015 & agg_total$regionCID=="WLD"&agg_total$povertyLine==1.9),]
@@ -67,8 +67,8 @@ forecasts$di_id[which(forecasts$CountryName=="Niger")]="NE"
 forecasts$di_id[which(forecasts$CountryName=="Burkina Faso")]="BF"
 forecasts$di_id[which(forecasts$CountryName=="Mauritania")]="MR"
 forecasts$di_id[which(forecasts$CountryName=="Djibouti")]="DJ"
-forecasts$di_id[which(forecasts$CountryName=="Somalia")]="SO"
-forecasts$di_id[which(forecasts$CountryName=="Afghanistan")]="AF"
+# forecasts$di_id[which(forecasts$CountryName=="Somalia")]="SO"
+# forecasts$di_id[which(forecasts$CountryName=="Afghanistan")]="AF"
 forecasts$protracted=1
 forecasts$protracted[which(is.na(forecasts$di_id))]=0
 poorpop2030=data.table(forecasts)[,.(
