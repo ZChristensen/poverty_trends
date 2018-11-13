@@ -97,11 +97,12 @@ names(base2020)[which(names(base2020)=="HeadCount")]="BaseHC2020"
 base2020=base2020[,c("CountryName","BaseHC2020","RegionCode")]
 dfs=list(base,plusone,minusone,base2020)
 forecasts=join_all(dfs)
-
-regionalforecasts=data.table(forecasts)[,.(r.base=mean(BaseHC2030)
-                                           ,r.minusone=mean(MinusOneHC2030)
-                                           ,r.plusone=mean(PlusOneHC2030)),
-                                        by=.(RegionCode)]
+forecasts2=forecasts[which(forecasts$CountryName!="Somalia"),]
+forecasts2=forecasts2[which(forecasts2$CountryName!="Afghanistan"),]
+regionalforecasts=data.table(forecasts2)[,.(r.base=mean(as.numeric(BaseHC2030))
+                                           ,r.minusone=mean(as.numeric(MinusOneHC2030))
+                                           ,r.plusone=mean(as.numeric(PlusOneHC2030))
+                                        ),by=.(RegionCode)]
 
 #WorldPopulationProspects
 # pop=read.csv("https://esa.un.org/unpd/wpp/DVD/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2017_TotalPopulationBySex.csv")
