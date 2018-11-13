@@ -80,7 +80,7 @@ merge.dat=merge.dat[,c("CountryName"
 base=data.table(merge.dat)[,.SD[which.min(basediff)],by=.(CountryName)]
 names(base)[which(names(base)=="HeadCount")]="BaseHC2030"
 base=base[,c("CountryName","BaseHC2030","RegionCode")]
-somalia=data.frame(CountryName="Somalia",BaseHC2030=".302",RegionCode="SSA")
+somalia=data.frame(CountryName="Somalia",BaseHC2030=".440",RegionCode="SSA")
 afghanistan=data.frame(CountryName="Afghanistan",BaseHC2030=".144",RegionCode="SAS")
 base=rbind(base,somalia,afghanistan)
 base=as.data.frame(base)

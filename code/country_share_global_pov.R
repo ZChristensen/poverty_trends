@@ -17,7 +17,7 @@ setwd(wd)
 poorpopulations=read.csv("data/data_warehouse/pop_in_poverty.csv")
 poorpopulations=subset(poorpopulations,Year==2015)
 af2015poorpop=(33736.49*.33)*1000
-so2015poorpop=(13908.13*.504)*1000
+so2015poorpop=(13908.13*.717)*1000
 so=data.frame(di_id="SO",Year="2015",Poorpop=so2015poorpop,Poorpop.Interp="",P20population="")
 af=data.frame(di_id="AF",Year="2015",Poorpop=af2015poorpop,Poorpop.Interp="",P20population="")
 poorpopulations=rbind(poorpopulations,so,af)
