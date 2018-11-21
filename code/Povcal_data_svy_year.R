@@ -113,6 +113,8 @@ dropped=c(
 ,"ROU_N2009Y"
 )
 
+##Note: The WB generally favors consumption surveys over income surveys except for:
+#Croatia, Estonia, Hungary, Latvia, Lithuania and Slovakia
 
 
 smy_svy=smy_svy[which(!smy_svy$SvyInfoID %in% dropped),]
