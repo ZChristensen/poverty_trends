@@ -20,7 +20,9 @@ P20trends=fread("P20incometrends.csv")
 # fwrite(dictionary,"UNnamestoPovcalnames.csv")
 dictionary=fread("UNnamestoPovcalnames.csv")
 P20trends=join(P20trends,dictionary,by=c("CountryName"))
-UNcategories=UNcategories[,c("country","income.group","disaggregated.income.group")]
+UNcategories$LDC=0
+UNcategories$LDC[which(UNcategories$TRUE.if.country.is.an.LDC==T)]=1
+UNcategories=UNcategories[,c("country","income.group","disaggregated.income.group","LDC")]
 P20trends=join(P20trends,UNcategories,by=c("country"))
 
 CLB=c(
@@ -61,14 +63,14 @@ P20trends$CLB[which(P20trends$CountryName %in% CLB)]=1
 total.poor.pop=data.table(P20trends)[,.(
   total.poor.pop=sum(pop*ExtPovHC)
 ),by=c("RequestYear")]
-
+P20trends=subset(P20trends, RequestYear %in% c(2010,2015))
 
 povertybyyear=data.table(P20trends)[,.(
   group.poor.pop=sum(ExtPovHC*pop)
 ),by=c("RequestYear","income.group")]
 povertybyyear=join(povertybyyear,total.poor.pop,by=c("RequestYear"))
 povertybyyear$share.of.poor=povertybyyear$group.poor.pop/povertybyyear$total.poor.pop
-povertybyyear=subset(povertybyyear, RequestYear %in% c(2010,2015))
+
 
 fwrite(povertybyyear,"shareofpoorpopbyUNIncome.csv")
 
@@ -79,5 +81,12 @@ povertybyyear.clb=data.table(P20trends)[,.(
 ),by=c("RequestYear","CLB")]
 povertybyyear.clb=join(povertybyyear.clb,total.poor.pop,by=c("RequestYear"))
 povertybyyear.clb$share.of.poor=povertybyyear.clb$group.poor.pop/povertybyyear.clb$total.poor.pop
-povertybyyear.clb=subset(povertybyyear.clb, RequestYear %in% c(2010,2015))
 fwrite(povertybyyear.clb,"shareofpoorpopbyCLB.csv")
+
+povertybyyear.ldc=data.table(P20trends)[,.(
+  group.poor.pop=sum(ExtPovHC*pop)
+),by=c("RequestYear","LDC")]
+povertybyyear.ldc=join(povertybyyear.ldc,total.poor.pop,by=c("RequestYear"))
+povertybyyear.ldc$share.of.poor=povertybyyear.ldc$group.poor.pop/povertybyyear.ldc$total.poor.pop
+fwrite(povertybyyear.ldc,"shareofpoorpopbyLDC.csv")
+
