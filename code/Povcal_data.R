@@ -12,14 +12,14 @@ if(.Platform$OS.type == "unix"){
 }
 wd = paste0(prefix,"/git/poverty_trends")
 setwd(wd)
-# source("code/povcal_api.R")
-# 
+source("code/povcal_api.R")
+
 # agg_results = list()
 # smy_results = list()
 # list_index = 1
-
+# 
 # load("data/povcal_list_tmp.RData")
-
+# 
 # for(povline in c(
 #   seq(from=0,to=10,by=0.01),
 #   seq(from=10.25,to=25.5,by=0.25),
@@ -39,24 +39,25 @@ setwd(wd)
 # 
 # agg_total=rbindlist(agg_results)
 # smy_total=rbindlist(smy_results)
-# save(smy_total,file="data/SMYPovcalScrapeSept2018.RData")
-# save(agg_total,file="data/AGGPovcalScrapeSept2018.RData")
+# save(smy_total,file="E:/git/poverty_trends/data/SMYPovcalScrapeMarch2019.RData")
+# save(agg_total,file="E:/git/poverty_trends/data/AGGPovcalScrapeMarch2019.RData")
 # smy_total_low = subset(smy_total,PovertyLine<=10)
 # smy_total_high = subset(smy_total,PovertyLine>10)
-# save(smy_total_low,file="data/SMYPovcalScrapeSept2018_low.RData")
-# save(smy_total_high,file="data/SMYPovcalScrapeSept2018_high.RData")
+# save(smy_total_low,file="E:/git/poverty_trends/data/SMYPovcalScrapeMarch2019_low.RData")
+# save(smy_total_high,file="E:/git/poverty_trends/data/SMYPovcalScrapeMarch2019_high.RData")
 
 # load("C:/Users/Zach/Documents/Poverty data/SMYPovcalScrape1May2018.RData")
 # load("C:/Users/Zach/Documents/Poverty data/AGGPovcalScrape1May2018.RData")
 # wd="C:/Users/Zach/Documents/Poverty data"
 # setwd(wd)
 
-load("data/SMYPovcalScrapeSept2018_low.RData")
-load("data/SMYPovcalScrapeSept2018_high.RData")
-load("data/AGGPovcalScrapeSept2018.RData")
+load("data/SMYPovcalScrapeMarch2019_low.RData")
+load("data/SMYPovcalScrapeMarch2019_high.RData")
+load("data/AGGPovcalScrapeMarch2019.RData")
 smy_total = rbind(smy_total_low,smy_total_high)
 smy_total=subset(smy_total, CoverageType %in% c("N","A"))
-
+smy_total=unique(smy_total)
+agg_total=unique(agg_total)
 #This code calculates p20 threshold
 #https://github.com/akmiller01/alexm-util/blob/master/DevInit/datahub_auto/povcal_calc.py
 

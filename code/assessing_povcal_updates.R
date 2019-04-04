@@ -14,11 +14,12 @@ lapply(list.of.packages, require, character.only=T)
 wd = paste0(prefix,"/git/poverty_trends/")
 setwd(wd)
 
-# load("data/AGGPovcalScrape1May2018.RData")
-# load("data/SMYPovcalScrape1May2018_low.RData")
-# load("data/SMYPovcalScrape1May2018_high.RData")
+load("data/AGGPovcalScrapeSept2018.RData")
+load("data/SMYPovcalScrapeSept2018_low.RData")
+load("data/SMYPovcalScrapeSept2018_high.RData")
 
 agg_total=unique(agg_total)
+smy_total=rbind(smy_total_high,smy_total_low)
 
 # agg_total=unfactor(data.frame(agg_total))
 # save(agg_total,file="data/AGGPovcalScrape1May2018.RData")
@@ -27,45 +28,41 @@ agg_total=unique(agg_total)
 # save(smy_high,file="data/SMYPovcalScrape1May2018_high.RData")
 # save(smy_low,file="data/SMYPovcalScrape1May2018_low.RData")
 
-regional.extpov = subset(agg_total, PovertyLine==1.90)
-regional.threetwenty=subset(agg_total, PovertyLine==3.20)
-regional.fivefifty=subset(agg_total, PovertyLine==5.50)
+regional.extpov = subset(agg_total, povertyLine==1.90)
+regional.threetwenty=subset(agg_total, povertyLine==3.20)
+regional.fivefifty=subset(agg_total, povertyLine==5.50)
                   
 old_regional=rbind(regional.extpov,regional.threetwenty,regional.fivefifty)
-old_regional$P2=as.numeric(old_regional$P2)
-old_regional$PG=as.numeric(old_regional$PG)
-old_regional$H=as.numeric(old_regional$H)
-old_regional$PovertyLine=as.numeric(old_regional$PovertyLine)
-old_regional$ConsumptionFloor = old_regional$PovertyLine*(1-(old_regional$P2/old_regional$PG))
+old_regional$ConsumptionFloor = old_regional$povertyLine*(1-(old_regional$p2/old_regional$pg))
 
-smy_total=rbind(smy_high,smy_low)
+
 
 
 smy_total=unfactor(data.frame(smy_total))
-smy_total= subset(smy_total, displayMode==0|displayMode==2|displayMode==4|displayMode==5)
-      smy.extpov=subset(smy_total,PovertyLine==1.90)
-      smy.threetwenty=subset(smy_total,PovertyLine==3.2)
-      smy.fivefifty=subset(smy_total,PovertyLine==5.5)
+smy_total=smy_total[which(smy_total$CoverageType %in% c("N","A")),]
+smy.extpov=subset(smy_total,PovertyLine==1.90)
+smy.threetwenty=subset(smy_total,PovertyLine==3.2)
+smy.fivefifty=subset(smy_total,PovertyLine==5.5)
 
 old_smy=rbind(smy.extpov,smy.threetwenty,smy.fivefifty)
 
 
 #Loading PovcalNet data
-load("data/AGGPovcalScrapeSept2018.RData")
-load("data/SMYPovcalScrapeSept2018_low.RData")
-load("data/SMYPovcalScrapeSept2018_high.RData")
+load("data/AGGPovcalScrape3April2019.RData")
+load("data/SMYPovcalScrape3April2019.RData")
 
-# agg_total=unique(agg_total)
-# save(agg_total,file="data/AGGPovcalScrapeSept2018.RData")
 
-smy_total=rbind(smy_total_high,smy_total_low)
+agg_total=unique(agg_total)
+smy_total=unique(smy_total)
+
+
 smy_total=smy_total[which(smy_total$CoverageType %in% c("N","A")),]
 setdiff(smy_total$CountryName,old_smy$CountryName)
 setdiff(old_smy$CountryName,smy_total$CountryName)
-old_smy$CountryName[which(old_smy$CountryName=="Swaziland")]="Eswatini"
 
 
 #Global Check
+
 colnames(old_regional) =c("requestYear",
                      "regionTitle"
                      ,"regionCID"
@@ -75,7 +72,7 @@ colnames(old_regional) =c("requestYear",
                     ,"oldpg"
                     ,"oldp2"
                     ,"oldpopulation"
-                    ,"oldConsumptionFloor")
+                    ,"oldP2")
 
 
 setdiff(old_regional$requestYear,agg_total$requestYear)
@@ -96,9 +93,7 @@ ggplot(agg190[which(requestYear>=1999),], aes(x=requestYear,y=annualized_hc_grow
 ggplot(agg190[which(requestYear>=2010),], aes(x=requestYear,y=annualized_hc_growth,group=regionCID,color=regionCID))+geom_line()+theme_classic()
 
 
-
 #Regional Check
-regions$oldhc=regions$oldhc/100
 regions$hcdiff=regions$oldhc-regions$hc
 regions$hcdiff_pct=regions$hcdiff/regions$oldhc
 big_diff_reg=subset(regions, abs(hcdiff_pct)>.02)
@@ -119,11 +114,14 @@ ggplot(eap.m,aes(x=requestYear,y=value,group=variable,color=variable))+geom_line
 
 #Country Check
 smy_2015=smy_total[which(smy_total$RequestYear==2015),]
-smy_2013=smy_total[which(smy_total$RequestYear==2013),]
-setnames(smy_2013,"HeadCount","HeadCount2013")
-
-comparisonsmy=join(smy_2015,smy_2013,by=c("CountryName","PovertyLine"))
-comparisonsmy$hcdiff=comparisonsmy$HeadCount-comparisonsmy$HeadCount2013
+# smy_2013=smy_total[which(smy_total$RequestYear==2013),]
+# setnames(smy_2013,"HeadCount","HeadCount2013")
+oldsmy_2015=old_smy[which(old_smy$RequestYear==2015),]
+setnames(oldsmy_2015,"HeadCount","OldHeadCount")
+# comparisonsmy=join(smy_2015,smy_2013,by=c("CountryName","PovertyLine"))
+comparisonsmy=join(smy_2015,oldsmy_2015,by=c("CountryName","PovertyLine"))
+comparisonsmy$hcdiff=comparisonsmy$HeadCount-comparisonsmy$OldHeadCount
+# comparisonsmy$hcdiff=comparisonsmy$HeadCount-comparisonsmy$HeadCount2013
 comparisonsmy$hc_growth=comparisonsmy$hcdiff/comparisonsmy$HeadCount2013
 comparisonsmy190=comparisonsmy[which(comparisonsmy$PovertyLine==1.9),]
 pov_inc=subset(comparisonsmy190, comparisonsmy190$hcdiff>0)
