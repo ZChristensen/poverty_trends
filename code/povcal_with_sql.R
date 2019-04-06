@@ -18,6 +18,8 @@ dbGetQuery(con, 'select distinct "RequestYear" from "PovCalNetSmy"')
 
 
 agg = dbReadTable(con, "PovCalNetAgg")
-save(smy,file="E:/git/poverty_trends/data/SMYPovcalScrape3April2019.RData")
-save(agg,file="E:/git/poverty_trends/data/AGGPovcalScrape3April2019.RData")
-
+smy = dbReadTable(con, "PovCalNetSmy")
+svy = dbReadTable(con, "PovCalNetSvy")
+save(smy,file="E:/git/poverty_trends/data/SMYPovcalScrape6April2019.RData")
+save(agg,file="E:/git/poverty_trends/data/AGGPovcalScrape6April2019.RData")
+save(svy,file="E:/git/poverty_trends/data/SVYPovcalScrape6April2019.RData")
