@@ -51,16 +51,17 @@ source("code/povcal_api.R")
 # wd="C:/Users/Zach/Documents/Poverty data"
 # setwd(wd)
 
-load("data/SMYPovcalScrapeMarch2019_low.RData")
-load("data/SMYPovcalScrapeMarch2019_high.RData")
-load("data/AGGPovcalScrapeMarch2019.RData")
-smy_total = rbind(smy_total_low,smy_total_high)
-smy_total=subset(smy_total, CoverageType %in% c("N","A"))
+load("data/SMYPovcalScrape6April2019.RData")
+load("data/AGGPovcalScrape6April2019.RData")
+
+
+smy_total=subset(smy, CoverageType %in% c("N","A"))
 smy_total=unique(smy_total)
-agg_total=unique(agg_total)
+agg_total=unique(agg)
 #This code calculates p20 threshold
 #https://github.com/akmiller01/alexm-util/blob/master/DevInit/datahub_auto/povcal_calc.py
-
+rm(smy,agg)
+gc()
 
 agg_total$ConsumptionFloor = agg_total$povertyLine*(1-(agg_total$p2/agg_total$pg))
 agg_total$diff=abs(agg_total$hc-0.2)
@@ -69,7 +70,7 @@ GlobalExtPov = subset(regional.extpov, regionTitle=="World Total")
 names(GlobalExtPov)[which(names(GlobalExtPov)=="ConsumptionFloor")] <- "Global.Consumption.Floor"
 names(GlobalExtPov)[which(names(GlobalExtPov)=="hc")] <- "Global.Ext.HC"
 keep=c("requestYear","Global.Consumption.Floor","Global.Ext.HC")
-GlobalExtPov=GlobalExtPov[,keep,with=F]
+GlobalExtPov=GlobalExtPov[,keep]
 regional.p20 = data.table(agg_total)[,.SD[which.min(diff)],by=.(regionTitle,requestYear)]
 WorldP20threshold = subset(regional.p20, regionTitle=="World Total")
 WorldP20threshold$P20Threshold = WorldP20threshold$povertyLine
@@ -78,12 +79,11 @@ WorldP20threshold2=data.frame(WorldP20threshold)[,keep]
 
 smy_total$ConsumptionFloor= smy_total$PovertyLine*(1-(smy_total$PovGapSqr/smy_total$PovGap))
 smy_total$diff = abs(smy_total$HeadCount - 0.20)
-setnames(WorldP20threshold2,"requestYear","RequestYear")
 smy_total=join(smy_total, WorldP20threshold2, by="RequestYear")
 smy_P20 = subset(smy_total, PovertyLine==P20Threshold)
 names(smy_P20)[which(names(smy_P20)=="HeadCount")] <- "P20Headcount"
 keep=c("CountryName","RequestYear","PovertyLine","HeadCount","CountryCode","ConsumptionFloor")
-smy_total2=smy_total[,keep,with=F]
+smy_total2=smy_total[,keep]
 countries.np20 = data.table(smy_total)[,.SD[which.min(diff)],by=.(CountryCode,RequestYear)]
 names(countries.np20)[which(names(countries.np20)=="PovGap")] <- "NP20PG"
 keep=c("CountryName","RequestYear","PovertyLine","HeadCount","CountryCode","NP20PG")

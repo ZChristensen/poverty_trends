@@ -14,48 +14,43 @@ setwd(wd)
 
 
 
-load("data/AGGPovcalScrape1May2018.RData")
-load("data/SMYPovcalScrape1May2018_low.RData")
-load("data/SMYPovcalScrape1May2018_high.RData")
-
-agg_total=unique(agg_total)
-
-
-regional.extpov = subset(agg_total, PovertyLine==1.90)
-
-old_regional=agg_total
-
-
-old_regional$P2=as.numeric(old_regional$P2)
-old_regional$PG=as.numeric(old_regional$PG)
-old_regional$H=as.numeric(old_regional$H)
-old_regional$PovertyLine=as.numeric(old_regional$PovertyLine)
-old_regional$oldConsumptionFloor = old_regional$PovertyLine*(1-(old_regional$P2/old_regional$PG))
-old.agg.extpov=subset(old_regional,PovertyLine==1.90 & RegionTitle=="World Total")
-old.consumption.floor=old.agg.extpov[,c("RequestYear","oldConsumptionFloor")]
-old.consumption.floor$oldConsumptionFloor=round(old.consumption.floor$oldConsumptionFloor,digits=2)
-
-smy_total=rbind(smy_high,smy_low)
-
-
-smy_total=unfactor(data.frame(smy_total))
-old_smy= subset(smy_total, displayMode==0|displayMode==2|displayMode==4|displayMode==5)
-old_smy= subset(old_smy, CoverageType==5|CoverageType==3)
-old_smy$CountryName[which(old_smy$CountryName=="Swaziland")]="Eswatini"
-old_smy=join(old_smy,old.consumption.floor, by="RequestYear")
-old_smy_consumption_floor=subset(old_smy, PovertyLine==oldConsumptionFloor)
-
 load("data/AGGPovcalScrapeSept2018.RData")
 load("data/SMYPovcalScrapeSept2018_low.RData")
 load("data/SMYPovcalScrapeSept2018_high.RData")
 
+agg_total=unique(agg_total)
+
+
+regional.extpov = subset(agg_total, povertyLine==1.90)
+
+old_regional=agg_total
+
+
+old_regional$oldConsumptionFloor = old_regional$povertyLine*(1-(old_regional$p2/old_regional$pg))
+old.agg.extpov=subset(old_regional,povertyLine==1.90 & regionTitle=="World Total")
+old.consumption.floor=old.agg.extpov[,c("requestYear","oldConsumptionFloor")]
+old.consumption.floor$oldConsumptionFloor=round(old.consumption.floor$oldConsumptionFloor,digits=2)
 
 smy_total=rbind(smy_total_high,smy_total_low)
+
+
+smy_total=unfactor(data.frame(smy_total))
+setnames(old.consumption.floor,"requestYear","RequestYear")
+old_smy= subset(smy_total, CoverageType=="N"|CoverageType=="A")
+old_smy=join(old_smy,old.consumption.floor, by="RequestYear")
+old_smy_consumption_floor=subset(old_smy, PovertyLine==oldConsumptionFloor)
+
+load("data/AGGPovcalScrape6April2019.RData")
+load("data/SMYPovcalScrape6April2019.RData")
+
+
+agg=unique(agg)
+smy_total=smy
 smy_total=smy_total[which(smy_total$CoverageType %in% c("N","A")),]
 
 
-agg_total$newConsumptionFloor = agg_total$povertyLine*(1-(agg_total$p2/agg_total$pg))
-new.agg.extpov=subset(agg_total,povertyLine==1.90 & regionTitle=="World Total")
+agg$newConsumptionFloor = agg$povertyLine*(1-(agg$p2/agg$pg))
+new.agg.extpov=subset(agg,povertyLine==1.90 & regionTitle=="World Total")
 new.consumption.floor=new.agg.extpov[,c("requestYear","newConsumptionFloor")]
 new.consumption.floor$newConsumptionFloor=round(new.consumption.floor$newConsumptionFloor,digits=2)
 names(new.consumption.floor)=c("RequestYear","newConsumptionFloor")
@@ -67,21 +62,19 @@ names(new_smy_consumption_floor)=c("CountryCode","RequestYear","newDataYear","ne
 new_smy_consumption_floor$newHeadCount=new_smy_consumption_floor$newHeadCount * 100
 
 smy_comparisons=join(old_smy_consumption_floor,new_smy_consumption_floor,by=c("CountryCode","RequestYear"))
-smy_comparisons$H=as.numeric(smy_comparisons$H)
-smy_comparisons$Hdiff=smy_comparisons$H-smy_comparisons$newHeadCount
+smy_comparisons$Hdiff=smy_comparisons$HeadCount-smy_comparisons$newHeadCount
 diffs=smy_comparisons[which(smy_comparisons$Hdiff>0),]
 
-
+smy_total=unique(smy_total)
 #Compare SMYs at 1.90
 old_smy_ext=old_smy[which(old_smy$PovertyLine==1.9),]
-old_smy_ext=old_smy_ext[,c("CountryCode","CountryName","RequestYear","H","PG","P2","DataYear","oldConsumptionFloor")]
+old_smy_ext=old_smy_ext[,c("CountryCode","CountryName","RequestYear","HeadCount","PovGap","PovGapSqr","DataYear","oldConsumptionFloor")]
+names(old_smy_ext)=c("CountryCode","CountryName","RequestYear","H","PG","P2","DataYear","oldConsumptionFloor")
 new_smy_ext=smy_total[which(smy_total$PovertyLine==1.9),]
 new_smy_ext=new_smy_ext[,c("CountryCode","RequestYear","HeadCount","PovGap","PovGapSqr","newConsumptionFloor")]
+names(new_smy_ext)=c("CountryCode","RequestYear","oldHeadCount","oldPG","oldP2","newConsumptionFloor")
 comparisons190=join(new_smy_ext,old_smy_ext, by=c("CountryCode","RequestYear"))
-comparisons190$oldHeadcount=as.numeric(comparisons190$H)/100
-comparisons190$oldPG=as.numeric(comparisons190$PG)/100
-comparisons190$oldP2=as.numeric(comparisons190$P2)/100
-comparisons190$hcdiff=comparisons190$oldHeadcount-comparisons190$HeadCount
+comparisons190$hcdiff=comparisons190$oldHeadcount-comparisons190$H
 comparisons190$pgdiff=comparisons190$oldPG-comparisons190$PovGap
 comparisons190$p2diff=comparisons190$oldP2-comparisons190$PovGapSqr
 diff190s=comparisons190[which(abs(comparisons190$hcdiff)>.01| abs(comparisons190$pgdiff)>.01|abs(comparisons190$p2diff)>.01),]

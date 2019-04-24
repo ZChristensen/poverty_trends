@@ -1,3 +1,5 @@
+###DOWNLOAD THE PRE-BUILT COUNTRY TABLE AND SAVE IT FIRST
+
 list.of.packages <- c("Hmisc","foreign","data.table","plyr","zoo")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -14,7 +16,7 @@ setwd(wd)
 
 povcalcuts <- read.csv("data/P20incometrends.csv",as.is=TRUE)
 
-excelpovcal=read.csv("C:/Users/Zach/Downloads/CountryTable_1.9 (8).csv")
+excelpovcal=read.csv("data/CountryTable_1.9.csv")
 excelpovcal=excelpovcal[which(excelpovcal$CoverageType %in% c("A","N")),]
 excelpovcal=excelpovcal[,c("PovGap","HeadCount","RequestYear","CountryName")]
 names(excelpovcal)=c("PovGapExcel","HeadCountExcel","RequestYear","CountryName")
